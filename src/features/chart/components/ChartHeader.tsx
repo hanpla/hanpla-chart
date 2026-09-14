@@ -1,5 +1,4 @@
 import React from "react";
-import { Cpu } from "lucide-react";
 import { Button } from "@/components/ui";
 import { formatTickerPrice } from "@/features/ticker-list/utils/ticker-sorter";
 import { TimeframeSelector } from "./TimeframeSelector";
@@ -31,21 +30,18 @@ export const ChartHeader: React.FC<ChartHeaderProps> = React.memo(
     isLoading,
     activeIndicators,
     onToggleIndicator,
-    indicatorExecutionTimeMs,
-    isCalculatingIndicators,
+    indicatorExecutionTimeMs: _indicatorExecutionTimeMs,
+    isCalculatingIndicators: _isCalculatingIndicators,
   }) => {
     const isUp = ohlv ? ohlv.close >= ohlv.open : true;
     const colorClass = isUp ? "text-emerald-400" : "text-rose-400";
 
     return (
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800/80 pb-2">
+      <div className="flex select-none flex-wrap items-center justify-between gap-2 border-b border-zinc-800/80 pb-2">
         <div className="flex flex-wrap items-center gap-2.5">
           <div className="flex items-baseline gap-1.5">
             <span className="font-mono text-sm font-bold tracking-tight text-zinc-100">
               {symbol}
-            </span>
-            <span className="font-mono text-[11px] text-zinc-400">
-              Canvas Engine
             </span>
           </div>
 
@@ -56,79 +52,65 @@ export const ChartHeader: React.FC<ChartHeaderProps> = React.memo(
 
           <div className="h-3.5 w-px bg-zinc-800" aria-hidden="true" />
 
-          {/* Indicator Toggles */}
-          <div className="flex items-center gap-1 rounded bg-zinc-900 p-0.5 font-mono text-[11px]">
+          {/* Indicator Toggles with Line Color Dots */}
+          <div className="flex items-center gap-1 rounded border border-zinc-800/60 bg-zinc-900/90 p-0.5 font-mono text-[11px]">
             <Button
               variant="tab"
               size="xs"
               isActive={activeIndicators.sma20}
               onClick={() => onToggleIndicator("sma20")}
-              className={`h-5 px-1.5 py-0 text-[10px] ${
+              className={`h-5 gap-1 px-1.5 py-0 text-[10px] ${
                 activeIndicators.sma20
                   ? "font-semibold text-yellow-400"
                   : "text-zinc-500 hover:text-zinc-300"
               }`}
             >
-              SMA 20
+              <span className="h-1.5 w-1.5 rounded-full bg-yellow-400" />
+              <span>SMA 20</span>
             </Button>
             <Button
               variant="tab"
               size="xs"
               isActive={activeIndicators.sma60}
               onClick={() => onToggleIndicator("sma60")}
-              className={`h-5 px-1.5 py-0 text-[10px] ${
+              className={`h-5 gap-1 px-1.5 py-0 text-[10px] ${
                 activeIndicators.sma60
                   ? "font-semibold text-purple-400"
                   : "text-zinc-500 hover:text-zinc-300"
               }`}
             >
-              SMA 60
+              <span className="h-1.5 w-1.5 rounded-full bg-purple-400" />
+              <span>SMA 60</span>
             </Button>
             <Button
               variant="tab"
               size="xs"
               isActive={activeIndicators.sma120}
               onClick={() => onToggleIndicator("sma120")}
-              className={`h-5 px-1.5 py-0 text-[10px] ${
+              className={`h-5 gap-1 px-1.5 py-0 text-[10px] ${
                 activeIndicators.sma120
                   ? "font-semibold text-sky-400"
                   : "text-zinc-500 hover:text-zinc-300"
               }`}
             >
-              SMA 120
+              <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+              <span>SMA 120</span>
             </Button>
             <Button
               variant="tab"
               size="xs"
               isActive={activeIndicators.bollinger}
               onClick={() => onToggleIndicator("bollinger")}
-              className={`h-5 px-1.5 py-0 text-[10px] ${
+              className={`h-5 gap-1 px-1.5 py-0 text-[10px] ${
                 activeIndicators.bollinger
                   ? "font-semibold text-emerald-400"
                   : "text-zinc-500 hover:text-zinc-300"
               }`}
             >
-              BB 20
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              <span>BB 20</span>
             </Button>
           </div>
-
-          {/* Worker Telemetry Indicator */}
-          {indicatorExecutionTimeMs !== undefined &&
-            indicatorExecutionTimeMs > 0 && (
-              <div
-                className="flex items-center gap-1 rounded border border-zinc-800/80 bg-zinc-900/80 px-1.5 py-0.5 font-mono text-[10px] text-zinc-400"
-                title="Web Worker 지표 계산 소요 시간"
-              >
-                <Cpu
-                  className={`h-3 w-3 ${
-                    isCalculatingIndicators
-                      ? "animate-pulse text-yellow-400"
-                      : "text-emerald-400"
-                  }`}
-                />
-                <span>Worker: {indicatorExecutionTimeMs.toFixed(1)}ms</span>
-              </div>
-            )}
         </div>
 
         {/* Live OHLV Indicators */}

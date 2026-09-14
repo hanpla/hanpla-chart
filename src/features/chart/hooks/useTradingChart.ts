@@ -90,6 +90,7 @@ export function useTradingChart({
         background: { type: ColorType.Solid, color: "transparent" },
         textColor: "#71717a", // zinc-500
         fontFamily: "monospace",
+        attributionLogo: false,
       },
       grid: {
         vertLines: { color: "rgba(39, 39, 42, 0.4)" }, // zinc-800 subtle

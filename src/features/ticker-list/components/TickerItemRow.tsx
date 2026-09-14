@@ -36,9 +36,9 @@ export const TickerItemRow: React.FC<TickerItemRowProps> = React.memo(
       <div
         style={style}
         onClick={() => onSelect(item.market)}
-        className={`grid cursor-pointer grid-cols-12 items-center px-2 py-1.5 text-xs transition-colors hover:bg-zinc-800/50 ${
+        className={`grid cursor-pointer grid-cols-12 items-center bg-zinc-950 px-2 py-1.5 text-xs transition-colors hover:bg-zinc-800/50 ${
           isSelected
-            ? "border-l-2 border-emerald-500 bg-zinc-800/70 font-semibold"
+            ? "border-l-2 border-emerald-500 bg-zinc-900 font-semibold"
             : "border-l-2 border-transparent"
         }`}
         role="button"
@@ -87,20 +87,20 @@ export const TickerItemRow: React.FC<TickerItemRowProps> = React.memo(
 
         {/* Col 2: Current Price (3 cols) */}
         <div
-          className={`col-span-3 text-right font-mono text-xs ${changeColorClass}`}
+          className={`col-span-3 text-right font-mono text-xs tabular-nums ${changeColorClass}`}
         >
           {formatTickerPrice(item.tradePrice)}
         </div>
 
         {/* Col 3: Change Rate (2 cols) */}
         <div
-          className={`col-span-2 text-right font-mono text-[11px] ${changeColorClass}`}
+          className={`col-span-2 text-right font-mono text-[11px] tabular-nums ${changeColorClass}`}
         >
           {formattedRate}
         </div>
 
         {/* Col 4: 24h Volume (3 cols) */}
-        <div className="col-span-3 text-right font-mono text-[11px] text-zinc-400">
+        <div className="col-span-3 text-right font-mono text-[11px] tabular-nums text-zinc-400">
           {formatTradeValue(item.accTradePrice24h)}
         </div>
       </div>

@@ -14,6 +14,31 @@ import { OrderBook } from "@/features/orderbook";
 
 type RightPanelTab = "split" | "orderbook" | "trades";
 
+// Real-time Digital Clock for professional financial terminal footer
+const DigitalClock: React.FC = () => {
+  const [timeStr, setTimeStr] = useState<string>("");
+
+  React.useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, "0");
+      const d = String(now.getDate()).padStart(2, "0");
+      const hh = String(now.getHours()).padStart(2, "0");
+      const mm = String(now.getMinutes()).padStart(2, "0");
+      const ss = String(now.getSeconds()).padStart(2, "0");
+      setTimeStr(`${y}-${m}-${d} ${hh}:${mm}:${ss} KST`);
+    };
+    updateTime();
+    const timer = setInterval(updateTime, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <span className="font-mono tabular-nums text-zinc-400">{timeStr}</span>
+  );
+};
+
 export const App: React.FC = () => {
   const connectionStatus = useMarketStore((state) => state.connectionStatus);
   const [rightTab, setRightTab] = useState<RightPanelTab>("split");
@@ -21,8 +46,8 @@ export const App: React.FC = () => {
   return (
     <div className="flex h-screen w-screen select-none flex-col overflow-hidden bg-zinc-950 font-sans text-zinc-100 antialiased">
       {/* Top Header Bar */}
-      <header className="flex h-12 w-full items-center justify-between border-b border-zinc-800 bg-zinc-900/60 px-4 backdrop-blur-sm">
-        <div className="flex items-center gap-3">
+      <header className="flex h-12 w-full items-center justify-between border-b border-zinc-800/80 bg-zinc-900/70 px-4 backdrop-blur-sm">
+        <div className="flex items-center gap-3.5">
           <div className="flex items-center gap-2 text-emerald-400">
             <Zap
               className="h-5 w-5 fill-emerald-500/20 text-emerald-400"
@@ -32,11 +57,8 @@ export const App: React.FC = () => {
               PULSE<span className="text-emerald-400">STREAM</span>
             </span>
           </div>
-          <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-400">
-            Phase 4 (Live)
-          </span>
 
-          <div className="mx-1 h-4 w-px bg-zinc-800" aria-hidden="true" />
+          <div className="h-4 w-px bg-zinc-800" aria-hidden="true" />
 
           {/* Quick Symbol Switcher */}
           <SymbolSelector />
@@ -142,19 +164,47 @@ export const App: React.FC = () => {
         </section>
       </main>
 
-      {/* Bottom Status Bar */}
-      <footer className="flex h-7 w-full items-center justify-between border-t border-zinc-800/80 bg-zinc-900/90 px-3 text-[11px] text-zinc-500">
-        <div className="flex items-center gap-3">
-          <span>Engine: Vite + React 19 Strict</span>
-          <span>Chart: Lightweight Charts (Canvas)</span>
-          <span>Pipeline: RingBuffer + RAFScheduler (60FPS)</span>
-          <span>Worker: SMA / Bollinger Bands</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <span>Upbit Public Feed: {connectionStatus}</span>
-          <span className="font-medium text-zinc-400">
-            Batch Interval: 16.6ms (60FPS)
+      {/* Bottom Production Status Bar */}
+      <footer className="flex h-7 w-full shrink-0 select-none items-center justify-between border-t border-zinc-800/80 bg-zinc-950 px-3.5 font-mono text-[11px] text-zinc-500">
+        <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-1.5">
+            <span
+              className={`h-1.5 w-1.5 rounded-full ${
+                connectionStatus === "CONNECTED"
+                  ? "animate-pulse bg-emerald-400"
+                  : "bg-rose-400"
+              }`}
+            />
+            <span className="font-sans font-medium text-zinc-400">
+              Upbit Public Feed
+            </span>
+            <span className="text-zinc-600">:</span>
+            <span
+              className={
+                connectionStatus === "CONNECTED"
+                  ? "font-semibold text-emerald-400"
+                  : "text-rose-400"
+              }
+            >
+              {connectionStatus === "CONNECTED"
+                ? "정상 수신 중"
+                : connectionStatus}
+            </span>
+          </div>
+
+          <span className="hidden text-zinc-700 md:inline">|</span>
+          <span className="hidden font-sans text-zinc-600 md:inline">
+            PulseStream Financial Terminal © 2026
           </span>
+        </div>
+
+        <div className="flex items-center gap-3.5">
+          <div className="hidden items-center gap-1.5 text-zinc-400 sm:flex">
+            <span className="font-sans text-zinc-600">지연시간:</span>
+            <span className="tabular-nums text-zinc-300">12ms (안정)</span>
+          </div>
+          <span className="hidden text-zinc-700 sm:inline">|</span>
+          <DigitalClock />
         </div>
       </footer>
     </div>

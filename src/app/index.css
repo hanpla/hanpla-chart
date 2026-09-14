@@ -51,4 +51,13 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #3f3f46;
   }
+
+  /* Hide TradingView attribution logo / watermark */
+  #tv-attr-logo,
+  a[href*="tradingview.com"] {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+  }
 }
