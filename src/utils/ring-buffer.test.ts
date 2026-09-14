@@ -141,6 +141,26 @@ describe("CircularRingBuffer", () => {
       expect(arr).toEqual(["a", "b"]);
       expect(rb.size).toBe(2);
     });
+
+    it("should return items in reverse order with toReversedArray", () => {
+      const rb = new CircularRingBuffer<string>(4);
+      expect(rb.toReversedArray()).toEqual([]);
+
+      rb.push("first");
+      rb.push("second");
+      rb.push("third");
+      expect(rb.toReversedArray()).toEqual(["third", "second", "first"]);
+
+      // With wrap-around overwrite
+      rb.push("fourth");
+      rb.push("fifth"); // overwrites "first"
+      expect(rb.toReversedArray()).toEqual([
+        "fifth",
+        "fourth",
+        "third",
+        "second",
+      ]);
+    });
   });
 
   describe("clear", () => {

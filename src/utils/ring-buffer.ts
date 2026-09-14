@@ -130,6 +130,26 @@ export class CircularRingBuffer<T> {
   }
 
   /**
+   * Returns a copy of the buffer items in LIFO order (newest to oldest)
+   * in a single allocation without extra array reversals.
+   */
+  public toReversedArray(): T[] {
+    if (this.count === 0) {
+      return [];
+    }
+
+    const result = new Array<T>(this.count);
+    for (let i = 0; i < this.count; i++) {
+      const idx = this.isPowerOfTwo
+        ? (this.tail + this.count - 1 - i) & this.mask
+        : (this.tail + this.count - 1 - i) % this.capacity;
+      result[i] = this.buffer[idx] as T;
+    }
+
+    return result;
+  }
+
+  /**
    * Clears all items and resets pointers.
    */
   public clear(): void {
