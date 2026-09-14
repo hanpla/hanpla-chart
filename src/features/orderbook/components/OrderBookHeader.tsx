@@ -1,5 +1,6 @@
 import React from "react";
 import { Crosshair } from "lucide-react";
+import { Button } from "@/components/ui";
 import { formatOrderbookSize } from "../utils/orderbook-math";
 
 export interface OrderBookHeaderProps {
@@ -31,16 +32,17 @@ export const OrderBookHeader: React.FC<OrderBookHeaderProps> = React.memo(
           </div>
 
           {/* Auto-Centering Button */}
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="xs"
             onClick={onCenter}
             title="현재가 중앙 정렬"
             aria-label="현재가 중앙 정렬"
-            className="flex items-center gap-1 rounded bg-zinc-900 px-1.5 py-0.5 text-[10px] text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-200"
+            className="h-5 gap-1 bg-zinc-900 px-1.5 py-0 text-[10px]"
           >
             <Crosshair className="h-3 w-3 text-emerald-400" />
             <span>중앙</span>
-          </button>
+          </Button>
         </div>
       </div>
     );

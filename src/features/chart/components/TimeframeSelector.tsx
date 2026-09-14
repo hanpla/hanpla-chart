@@ -1,4 +1,5 @@
 import React from "react";
+import { Button } from "@/components/ui";
 import { TIMEFRAME_OPTIONS } from "../utils/candle-aggregator";
 import type { ChartTimeframe } from "../types/chart";
 
@@ -14,18 +15,16 @@ export const TimeframeSelector: React.FC<TimeframeSelectorProps> = React.memo(
         {TIMEFRAME_OPTIONS.map((opt) => {
           const isSelected = selected === opt.value;
           return (
-            <button
+            <Button
               key={opt.value}
-              type="button"
+              variant="tab"
+              size="xs"
+              isActive={isSelected}
               onClick={() => onChange(opt.value)}
-              className={`rounded px-2 py-0.5 text-[11px] transition-colors ${
-                isSelected
-                  ? "bg-zinc-800 font-semibold text-emerald-400 shadow-sm"
-                  : "hover:bg-zinc-850 text-zinc-400 hover:text-zinc-200"
-              }`}
+              className={isSelected ? "text-emerald-400" : undefined}
             >
               {opt.label}
-            </button>
+            </Button>
           );
         })}
       </div>

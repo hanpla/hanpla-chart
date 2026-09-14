@@ -5,6 +5,7 @@ import {
   SymbolSelector,
   HeaderRealtimeSection,
   ErrorBoundary,
+  Button,
 } from "@/components";
 import { TickerList } from "@/features/ticker-list";
 import { TradingChart } from "@/features/chart";
@@ -68,39 +69,45 @@ export const App: React.FC = () => {
               MARKET DEPTH & FEED
             </span>
             <div className="flex items-center gap-1">
-              <button
-                type="button"
+              <Button
+                variant="tab"
+                size="xs"
+                isActive={rightTab === "split"}
                 onClick={() => setRightTab("split")}
-                className={`rounded px-1.5 py-0.5 transition-colors ${
+                className={`h-5 px-1.5 py-0 text-[10px] ${
                   rightTab === "split"
-                    ? "bg-zinc-800 font-semibold text-emerald-400"
+                    ? "text-emerald-400"
                     : "text-zinc-500 hover:text-zinc-300"
                 }`}
               >
                 동시분할
-              </button>
-              <button
-                type="button"
+              </Button>
+              <Button
+                variant="tab"
+                size="xs"
+                isActive={rightTab === "orderbook"}
                 onClick={() => setRightTab("orderbook")}
-                className={`rounded px-1.5 py-0.5 transition-colors ${
+                className={`h-5 px-1.5 py-0 text-[10px] ${
                   rightTab === "orderbook"
-                    ? "bg-zinc-800 font-semibold text-emerald-400"
+                    ? "text-emerald-400"
                     : "text-zinc-500 hover:text-zinc-300"
                 }`}
               >
                 호가
-              </button>
-              <button
-                type="button"
+              </Button>
+              <Button
+                variant="tab"
+                size="xs"
+                isActive={rightTab === "trades"}
                 onClick={() => setRightTab("trades")}
-                className={`rounded px-1.5 py-0.5 transition-colors ${
+                className={`h-5 px-1.5 py-0 text-[10px] ${
                   rightTab === "trades"
-                    ? "bg-zinc-800 font-semibold text-emerald-400"
+                    ? "text-emerald-400"
                     : "text-zinc-500 hover:text-zinc-300"
                 }`}
               >
                 체결
-              </button>
+              </Button>
             </div>
           </div>
 

@@ -1,4 +1,5 @@
 import React from "react";
+import { Badge } from "@/components/ui";
 import type { TradeRecord } from "../types/trade";
 import {
   formatVolumeAmount,
@@ -36,9 +37,9 @@ export const TradeItemRow: React.FC<TradeItemRowProps> = React.memo(
         <div className="col-span-3 flex items-center gap-1 overflow-hidden text-[11px] text-zinc-500">
           <span>{item.formattedTime}</span>
           {isMega && (
-            <span className="py-0.2 rounded bg-amber-400 px-1 text-[9px] font-bold text-zinc-950">
+            <Badge intent="whale" size="xs">
               WHALE
-            </span>
+            </Badge>
           )}
         </div>
 

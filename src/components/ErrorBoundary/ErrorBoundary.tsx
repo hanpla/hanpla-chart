@@ -1,5 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { AlertTriangle, RefreshCw } from "lucide-react";
+import { Button } from "../ui";
 
 export interface ErrorBoundaryProps {
   children: ReactNode;
@@ -23,10 +24,10 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
   }
 
   public override componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    console.error("ErrorBoundary caught an error:", error, errorInfo);
+    console.error("[ErrorBoundary caught an error]:", error, errorInfo);
   }
 
-  private handleReset = (): void => {
+  private handleReset = () => {
     this.setState({ hasError: false, error: null });
     this.props.onReset?.();
   };
@@ -46,14 +47,15 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
               {this.state.error?.message ?? "알 수 없는 런타임 예외"}
             </span>
           </div>
-          <button
-            type="button"
+          <Button
+            variant="default"
+            size="sm"
             onClick={this.handleReset}
-            className="flex items-center gap-1.5 rounded border border-zinc-700 bg-zinc-800 px-2.5 py-1 text-xs text-zinc-300 transition-colors hover:bg-zinc-700 hover:text-zinc-100"
+            className="gap-1.5"
           >
             <RefreshCw className="h-3 w-3" />
             <span>다시 시도</span>
-          </button>
+          </Button>
         </div>
       );
     }

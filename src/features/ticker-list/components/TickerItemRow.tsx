@@ -1,5 +1,6 @@
 import React from "react";
 import { Star } from "lucide-react";
+import { Badge } from "@/components/ui";
 import type { TickerItem } from "../types/ticker";
 import { formatTickerPrice, formatTradeValue } from "../utils/ticker-sorter";
 
@@ -70,9 +71,9 @@ export const TickerItemRow: React.FC<TickerItemRowProps> = React.memo(
                 {item.koreanName}
               </span>
               {item.warning && (
-                <span className="py-0.2 rounded bg-amber-500/20 px-1 text-[9px] text-amber-400">
+                <Badge intent="warning" size="xs">
                   유의
-                </span>
+                </Badge>
               )}
             </div>
             <span className="text-[10px] text-zinc-500">{item.symbol}</span>

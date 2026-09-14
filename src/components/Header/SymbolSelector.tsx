@@ -1,5 +1,6 @@
 import React from "react";
 import { useMarketStore } from "@/stores";
+import { Button } from "@/components/ui";
 
 const POPULAR_MARKETS = ["KRW-BTC", "KRW-ETH", "KRW-SOL", "KRW-XRP"];
 
@@ -16,19 +17,16 @@ export const SymbolSelector: React.FC = React.memo(() => {
       {POPULAR_MARKETS.map((symbol) => {
         const isSelected = currentSymbol === symbol;
         return (
-          <button
+          <Button
             key={symbol}
-            type="button"
-            aria-pressed={isSelected}
+            variant="tab"
+            size="xs"
+            isActive={isSelected}
             onClick={() => setSymbol(symbol)}
-            className={`rounded px-2 py-1 font-mono transition-colors ${
-              isSelected
-                ? "border border-zinc-700 bg-zinc-800 font-semibold text-zinc-100"
-                : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"
-            }`}
+            className="font-mono"
           >
             {symbol}
-          </button>
+          </Button>
         );
       })}
     </div>

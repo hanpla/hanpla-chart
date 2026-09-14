@@ -1,5 +1,6 @@
 import React from "react";
 import { Search, Star, ArrowUpDown, ArrowUp, ArrowDown, X } from "lucide-react";
+import { Button, Input } from "@/components/ui";
 import type {
   TickerSortField,
   SortDirection,
@@ -46,29 +47,28 @@ export const TickerHeader: React.FC<TickerHeaderProps> = React.memo(
         {/* Top: Tabs & Counts */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1 rounded bg-zinc-900 p-0.5 text-xs">
-            <button
-              type="button"
+            <Button
+              variant="tab"
+              size="xs"
+              isActive={tab === "all"}
               onClick={() => onTabChange("all")}
-              className={`rounded px-2.5 py-1 transition-colors ${
-                tab === "all"
-                  ? "bg-zinc-800 font-semibold text-zinc-100 shadow-sm"
-                  : "text-zinc-400 hover:text-zinc-200"
-              }`}
             >
               전체
-            </button>
-            <button
-              type="button"
+            </Button>
+            <Button
+              variant="tab"
+              size="xs"
+              isActive={tab === "bookmarks"}
               onClick={() => onTabChange("bookmarks")}
-              className={`flex items-center gap-1 rounded px-2.5 py-1 transition-colors ${
+              className={
                 tab === "bookmarks"
-                  ? "bg-zinc-800 font-semibold text-amber-400 shadow-sm"
-                  : "text-zinc-400 hover:text-amber-400/80"
-              }`}
+                  ? "text-amber-400"
+                  : "hover:text-amber-400/80"
+              }
             >
-              <Star className="h-3 w-3 fill-current" />
+              <Star className="mr-1 h-3 w-3 fill-current" />
               관심
-            </button>
+            </Button>
           </div>
           <span className="font-mono text-[11px] text-zinc-500">
             {filteredCount} / {totalCount}
@@ -76,26 +76,24 @@ export const TickerHeader: React.FC<TickerHeaderProps> = React.memo(
         </div>
 
         {/* Search Input */}
-        <div className="relative flex items-center">
-          <Search className="absolute left-2.5 h-3.5 w-3.5 text-zinc-500" />
-          <input
-            type="text"
-            value={keyword}
-            onChange={(e) => onKeywordChange(e.target.value)}
-            placeholder="코인명 / 심볼 검색 (예: BTC, 비트)"
-            className="h-7 w-full rounded border border-zinc-800 bg-zinc-900/90 pl-8 pr-7 text-xs text-zinc-200 placeholder-zinc-500 focus:border-zinc-700 focus:outline-none focus:ring-1 focus:ring-emerald-500/30"
-          />
-          {keyword && (
-            <button
-              type="button"
-              onClick={() => onKeywordChange("")}
-              className="absolute right-2 text-zinc-500 hover:text-zinc-300"
-              aria-label="검색어 지우기"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          )}
-        </div>
+        <Input
+          value={keyword}
+          onChange={(e) => onKeywordChange(e.target.value)}
+          placeholder="코인명 / 심볼 검색 (예: BTC, 비트)"
+          leftElement={<Search className="h-3.5 w-3.5 text-zinc-500" />}
+          rightElement={
+            keyword ? (
+              <Button
+                variant="ghost"
+                size="icon-xs"
+                onClick={() => onKeywordChange("")}
+                aria-label="검색어 지우기"
+              >
+                <X className="h-3.5 w-3.5" />
+              </Button>
+            ) : null
+          }
+        />
 
         {/* Column Headers for Sorting */}
         <div className="grid grid-cols-12 items-center px-2 text-[10px] font-semibold text-zinc-500">
