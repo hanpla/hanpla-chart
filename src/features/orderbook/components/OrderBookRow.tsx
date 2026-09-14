@@ -48,7 +48,8 @@ export const OrderBookRow: React.FC<OrderBookRowProps> = React.memo(
       prevProps.item.price === nextProps.item.price &&
       prevProps.item.size === nextProps.item.size &&
       prevProps.item.cumSize === nextProps.item.cumSize &&
-      prevProps.item.depthRatio === nextProps.item.depthRatio &&
+      Math.round(prevProps.item.depthRatio * 10) ===
+        Math.round(nextProps.item.depthRatio * 10) &&
       prevProps.item.type === nextProps.item.type
     );
   },
