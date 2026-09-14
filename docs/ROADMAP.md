@@ -21,10 +21,10 @@
 
 ### 세부 태스크
 
-- [ ] **프로젝트 초기화 및 툴체인 설정**
-  - [ ] Vite + React 19 + TypeScript (Strict) 보일러플레이트 구성
-  - [ ] Tailwind CSS + CVA + Lucide Icons 환경 설정
-  - [ ] ESLint 9 Flat Config + Prettier + Husky + lint-staged 연동
+- [x] **프로젝트 초기화 및 툴체인 설정**
+  - [x] Vite + React 19 + TypeScript (Strict) 보일러플레이트 구성
+  - [x] Tailwind CSS + CVA + Lucide Icons 환경 설정
+  - [x] ESLint 9 Flat Config + Prettier + Husky + lint-staged 연동
 - [ ] **WebSocket 통신 계층 (`src/services/websocket/`)**
   - [ ] `WebSocketManager` 클래스 구현
   - [ ] 업비트 Public WebSocket 연동 (Blob 바이너리 포맷 수신 처리)
