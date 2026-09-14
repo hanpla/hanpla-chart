@@ -58,9 +58,12 @@ ESLint/Prettier에 의해 자동 정렬되도록 구성하며, 논리적 순서�
 
 ## 3. UI 스타일링 및 디자인 시스템 (Tailwind + CVA + Radix)
 
-### 3.1 Class Variance Authority (CVA) 작성 표준
+### 3.1 Design System First & CVA 작성 표준
 
-반복되는 UI 변형(버튼 크기, 상태 색상, 뱃지 등)은 CVA를 활용하여 타입 안정성을 확보합니다.
+- **컴포넌트 내 인라인 UI 스타일 즉석 조합 금지**:
+  버튼, 뱃지, 텍스트 입력창 등 반복되는 저수준 UI 요소는 개별 컴포넌트에 임의의 Tailwind 클래스로 즉석 구현하지 않고, 반드시 `src/components/ui/`에 CVA 기반 공통 컴포넌트(`Button`, `Badge`, `Input` 등)로 구현하여 재사용합니다.
+- **CVA를 통한 일관된 인터페이스**:
+  새로운 스타일이나 상태(Variant, Size, Intent)가 필요한 경우, 기존 공통 컴포넌트에 CVA Variant를 추가하거나 신규 UI 프리미티브를 `src/components/ui/`에 등록한 후 사용합니다.
 
 ```tsx
 import { cva, type VariantProps } from "class-variance-authority";

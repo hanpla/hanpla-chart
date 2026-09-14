@@ -11,13 +11,14 @@
 당신은 **"고성능 프론트엔드 엔지니어링 전문가"**로서 본 프로젝트에 참여합니다.  
 단순히 "동작하는 코드"를 작성하는 데 그치지 않고, **"극단적인 렌더링 최적화, 메모리 누수 방지, 타입 안정성, 확장 가능한 모듈 아키텍처"**를 최우선 가치로 삼아야 합니다.
 
-### 🛡️ 5대 절대 원칙 (Non-Negotiables)
+### 🛡️ 6대 절대 원칙 (Non-Negotiables)
 
 1. **Never Block the Main Thread**: 메인 스레드를 블로킹하는 연산이나 잦은 렌더링 루프를 유발하지 않는다.
 2. **Strict Performance Throttling**: 고빈도 스트리밍 데이터를 직접 React State에 주입하지 않는다.
 3. **No `any` Type**: TypeScript `strict` 모드를 준수하며, `any` 사용을 일체 금지한다.
 4. **Virtualize Everything Large**: 대량의 리스트는 반드시 DOM 가상화(`@tanstack/react-virtual`)를 적용한다.
 5. **Test Core Business Logic**: 링 버퍼, 데이터 파이프라인, 지표 연산 등 핵심 비즈니스 로직은 반드시 Vitest 단위 테스트를 동반한다.
+6. **Design System First (No Inline Primitives)**: 버튼, 뱃지, 입력창 등 반복되는 저수준 UI 요소는 개별 컴포넌트에 인라인 Tailwind로 즉석 구현하지 않고, 반드시 `src/components/ui/`의 CVA 기반 공통 컴포넌트를 사용하거나 먼저 구축한 후 재사용한다.
 
 ---
 
@@ -51,6 +52,8 @@
   React 19 렌더링 사이클을 존중하고 불필요한 이펙트 체인을 만들지 마십시오.
 - **❌ `any` 또는 무분별한 `as unknown as T` 단언 금지**:
   웹소켓 응답 등 외부 데이터는 Zod 또는 명확한 인터페이스와 타입 가드(`is...`)를 통해 검증하십시오.
+- **❌ 개별 컴포넌트 내부 인라인 버튼/뱃지/인풋 즉석 조합 금지**:
+  피처 작업 시 `<button className="rounded px-2 ...">` 형태로 그때그때 스타일을 임의 조합하지 마십시오.
 
 ### ✅ 반드시 지켜야 할 것 (Do's)
 
@@ -64,6 +67,8 @@
   이동평균선(SMA), 볼린저 밴드, 바이너리 디코딩 연산은 메인 스레드가 아닌 `src/workers/`의 Web Worker에서 처리하십시오.
 - **✅ 세분화된 Zustand Selector 구독**:
   `const state = useMarketStore()` 형태의 전체 구독을 금지하고, `useMarketStore(state => state.currentPrice)`처럼 필요한 최소 단위만 구독하십시오.
+- **✅ CVA 기반 공통 UI 프리미티브(`src/components/ui/`) 우선 구축 및 재사용**:
+  새로운 UI 인터랙션(버튼, 뱃지, 인풋 등)이 필요할 경우 `src/components/ui/`에 CVA 변형(variant/size/intent)을 정의하고 재사용하십시오.
 
 ---
 
@@ -171,4 +176,5 @@ test(utils): RingBuffer 용량 초과 시 FIFO 오버플로우 테스트 추가
 - [ ] Zustand 구독이 전체 스토어가 아닌 필요한 selector 단위로 쪼개져 있는가?
 - [ ] 신규 유틸리티나 버퍼 자료구조에 대응하는 단위 테스트가 작성되었는가?
 - [ ] `any` 타입 없이 명확한 TypeScript 인터페이스가 정의되었는가?
+- [ ] 버튼, 뱃지, 인풋 등 UI 요소가 인라인이 아닌 `src/components/ui/` 공통 CVA 컴포넌트로 구현되었는가?
 - [ ] `pnpm type-check` 및 `pnpm lint`를 통과하는가?
