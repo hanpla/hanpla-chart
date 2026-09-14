@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#09090b" />
+      <stop offset="50%" stop-color="#111827" />
+      <stop offset="100%" stop-color="#09090b" />
+    </linearGradient>
+    <linearGradient id="accent-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <linearGradient id="card-border" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#27272a" />
+      <stop offset="100%" stop-color="#18181b" />
+    </linearGradient>
+    
+    <!-- Glow Filter -->
+    <filter id="glow-heavy" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="0" stdDeviation="25" flood-color="#10b981" flood-opacity="0.35" />
+    </filter>
+    <filter id="glow-subtle" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#34d399" flood-opacity="0.4" />
+    </filter>
+
+    <!-- Grid Pattern -->
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#27272a" stroke-width="0.75" stroke-opacity="0.4" />
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg-grad)" />
+  <rect width="1200" height="630" fill="url(#grid)" />
+
+  <!-- Ambient Glow Circles -->
+  <circle cx="200" cy="180" r="280" fill="#10b981" fill-opacity="0.07" filter="blur(80px)" />
+  <circle cx="1000" cy="450" r="320" fill="#065f46" fill-opacity="0.08" filter="blur(100px)" />
+
+  <!-- Main Card Container -->
+  <rect x="80" y="80" width="1040" height="470" rx="20" fill="#18181b" fill-opacity="0.7" stroke="#27272a" stroke-width="1.5" />
+
+  <!-- Brand Symbol (Large Zap) -->
+  <g transform="translate(140, 150)">
+    <rect width="84" height="84" rx="20" fill="#09090b" stroke="#27272a" stroke-width="2" />
+    <path
+      d="M48 14L22 46H38L32 72L62 38H44L50 14Z"
+      fill="url(#accent-grad)"
+      stroke="#34d399"
+      stroke-width="1.5"
+      stroke-linejoin="round"
+      filter="url(#glow-subtle)"
+    />
+  </g>
+
+  <!-- Brand Typography -->
+  <text x="250" y="212" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="54" letter-spacing="4" fill="#f4f4f5">
+    PULSE<tspan fill="#34d399">STREAM</tspan>
+  </text>
+  
+  <text x="140" y="295" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="28" fill="#e4e4e7">
+    초고속 실시간 금융 &amp; 가상자산 트레이딩 터미널
+  </text>
+
+  <text x="140" y="340" font-family="'JetBrains Mono', monospace, sans-serif" font-weight="400" font-size="19" fill="#a1a1aa">
+    Ultra-Low Latency High-Frequency Trading Terminal · 60 FPS Canvas Engine
+  </text>
+
+  <!-- Badges Grid -->
+  <g transform="translate(140, 400)">
+    <!-- Badge 1 -->
+    <rect x="0" y="0" width="190" height="42" rx="10" fill="#27272a" fill-opacity="0.8" stroke="#3f3f46" stroke-width="1" />
+    <circle cx="22" cy="21" r="5" fill="#10b981" />
+    <text x="36" y="27" font-family="'JetBrains Mono', monospace" font-size="14" font-weight="600" fill="#f4f4f5">
+      50-Depth Orderbook
+    </text>
+
+    <!-- Badge 2 -->
+    <rect x="206" y="0" width="195" height="42" rx="10" fill="#27272a" fill-opacity="0.8" stroke="#3f3f46" stroke-width="1" />
+    <circle cx="228" cy="21" r="5" fill="#38bdf8" />
+    <text x="242" y="27" font-family="'JetBrains Mono', monospace" font-size="14" font-weight="600" fill="#f4f4f5">
+      Lightweight Charts
+    </text>
+
+    <!-- Badge 3 -->
+    <rect x="417" y="0" width="205" height="42" rx="10" fill="#27272a" fill-opacity="0.8" stroke="#3f3f46" stroke-width="1" />
+    <circle cx="439" cy="21" r="5" fill="#eab308" />
+    <text x="453" y="27" font-family="'JetBrains Mono', monospace" font-size="14" font-weight="600" fill="#f4f4f5">
+      Web Worker Pipeline
+    </text>
+
+    <!-- Badge 4 -->
+    <rect x="638" y="0" width="170" height="42" rx="10" fill="#27272a" fill-opacity="0.8" stroke="#3f3f46" stroke-width="1" />
+    <circle cx="660" cy="21" r="5" fill="#a855f7" />
+    <text x="674" y="27" font-family="'JetBrains Mono', monospace" font-size="14" font-weight="600" fill="#f4f4f5">
+      RingBuffer &amp; RAF
+    </text>
+  </g>
+
+  <!-- Bottom Terminal Tag -->
+  <text x="140" y="505" font-family="'JetBrains Mono', monospace" font-size="13" fill="#71717a">
+    Powered by Upbit Open WebSocket &amp; REST API · Production Ready
+  </text>
+  <text x="1000" y="505" text-anchor="end" font-family="'JetBrains Mono', monospace" font-size="13" fill="#71717a">
+    PulseStream Financial Terminal © 2026
+  </text>
+</svg>

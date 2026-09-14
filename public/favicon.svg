@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="pulse-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="1.5" flood-color="#10b981" flood-opacity="0.6" />
+    </filter>
+  </defs>
+  <!-- Background Badge -->
+  <rect width="32" height="32" rx="7" fill="#09090b" stroke="#27272a" stroke-width="1.2" />
+  
+  <!-- Subtle Background Grid/Accent -->
+  <circle cx="16" cy="16" r="11" fill="none" stroke="#10b981" stroke-opacity="0.12" stroke-dasharray="2 3" />
+
+  <!-- PulseStream Zap Icon with Emerald Glow -->
+  <path
+    d="M17.5 4.5L7.5 16.5H14L12 27.5L23.5 14H16.5L18.5 4.5Z"
+    fill="url(#pulse-grad)"
+    stroke="#34d399"
+    stroke-width="0.8"
+    stroke-linejoin="round"
+    filter="url(#glow)"
+  />
+</svg>
