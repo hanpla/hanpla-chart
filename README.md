@@ -8,7 +8,9 @@
 [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Zustand](https://img.shields.io/badge/Zustand-State_Management-brown?style=flat-square)](https://github.com/pmndrs/zustand)
 [![Lightweight Charts](https://img.shields.io/badge/TradingView-Lightweight_Charts-blue?style=flat-square)](https://tradingview.github.io/lightweight-charts/)
-[![Vitest](https://img.shields.io/badge/Vitest-Unit_Test-6E9F18?style=flat-square&logo=vitest&logoColor=white)](https://vitest.dev/)
+[![Vitest](https://img.shields.io/badge/Vitest-108_Passed-6E9F18?style=flat-square&logo=vitest&logoColor=white)](https://vitest.dev/)
+[![Playwright](https://img.shields.io/badge/Playwright-E2E_Verified-45ba4b?style=flat-square&logo=playwright&logoColor=white)](https://playwright.dev/)
+[![CI](https://img.shields.io/badge/CI-Passing-brightgreen?style=flat-square&logo=githubactions&logoColor=white)](.github/workflows/ci.yml)
 
 ---
 
@@ -135,8 +137,15 @@ pnpm install
 # 로컬 개발 서버 실행 (Vite)
 pnpm dev
 
-# 단위 테스트 실행 (Vitest)
+# 단위 및 컴포넌트 테스트 실행 (Vitest)
 pnpm test
+
+# E2E 브라우저 시나리오 테스트 실행 (Playwright)
+pnpm test:e2e
+
+# 타입 검사 & 린트 검증
+pnpm type-check
+pnpm lint
 
 # 빌드 및 프로덕션 미리보기
 pnpm build
@@ -147,6 +156,7 @@ pnpm preview
 
 ## 📖 추가 기술 문서
 
+- 🛠️ **[엔지니어링 챌린지 & 성능 트러블슈팅 리포트 (docs/TROUBLESHOOTING.md)](docs/TROUBLESHOOTING.md)**: 3대 병목 극복 과정, 정량적 측정 수치, DevTools 프로파일링, 면접관 Q&A
 - 🏛️ **[시스템 상세 설계서 (docs/ARCHITECTURE.md)](docs/ARCHITECTURE.md)**: 데이터 파이프라인 및 최적화 아키텍처 상세
 - 📐 **[컨벤션 가이드 (docs/CONVENTIONS.md)](docs/CONVENTIONS.md)**: 코딩 스타일, Git 커밋 및 브랜치 규칙
 - 🗺️ **[개발 로드맵 (docs/ROADMAP.md)](docs/ROADMAP.md)**: 4주차 개발 마일스톤 및 완료 체크리스트

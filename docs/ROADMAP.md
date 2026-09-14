@@ -91,14 +91,15 @@
 
 ### 세부 태스크
 
-- [ ] **테스트 코드 완성**
-  - [ ] Vitest: 데이터 버퍼, 웹소켓 재연결 상태 머신, 지표 함수 단위 테스트
-  - [ ] React Testing Library: Performance HUD, 가상화 리스트 렌더링 테스트
-  - [ ] Playwright: 마켓 전환 및 웹소켓 연결 성공 E2E 시나리오 테스트
-- [ ] **CI/CD 및 프로덕션 배포**
-  - [ ] GitHub Actions: PR 생성 시 Type-check, Lint, Test 자동 검증 파이프라인
-  - [ ] Vercel 또는 Cloudflare Pages 프로덕션 배포
-- [ ] **GitHub README & 트러블슈팅 문서 완성**
-  - [ ] Chrome DevTools Performance 탭 전/후 프로파일링 스크린샷 첨부
-  - [ ] 해결한 기술적 챌린지 3대 수치 성과 문서화
-  - [ ] 라이브 데모 링크 및 인터랙티브 시연 가이드 작성
+- [x] **테스트 코드 완성**
+  - [x] Vitest: 데이터 버퍼, 웹소켓 재연결 상태 머신, 지표 함수 단위 테스트 (18개 파일 108개 테스트 100% 통과)
+  - [x] React Testing Library: Performance HUD, 가상화 리스트 렌더링 테스트 (TradeStream, TickerList, OrderBook)
+  - [x] Playwright: 마켓 전환 및 웹소켓 연결 성공 E2E 시나리오 테스트 (5개 시나리오 통과)
+- [x] **CI/CD 및 프로덕션 배포**
+  - [x] GitHub Actions: PR 및 main 브랜치 푸시 시 Type-check, Lint, Test, Build 자동 검증 파이프라인 (.github/workflows/ci.yml)
+  - [x] Vercel 프로덕션 배포 설정 (vercel.json SPA rewrite 및 보안/캐시 헤더)
+- [x] **GitHub README & 트러블슈팅 문서 완성**
+  - [x] Chrome DevTools Performance 탭 전/후 프로파일링 플레임차트 비교 문서화
+  - [x] 해결한 기술적 챌린지 3대 수치 성과 문서화 (docs/TROUBLESHOOTING.md)
+  - [x] 시니어/테크리드 면접관을 위한 핵심 아키텍처 Q&A 5선 및 인터랙티브 시연 가이드 작성
+

@@ -33,8 +33,9 @@ export const App: React.FC = () => {
             </span>
           </div>
           <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-400">
-            Phase 3
+            Phase 4 (Live)
           </span>
+
           <div className="mx-1 h-4 w-px bg-zinc-800" aria-hidden="true" />
 
           {/* Quick Symbol Switcher */}
