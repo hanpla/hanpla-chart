@@ -84,8 +84,13 @@ export function useTradeStreamData(symbol: string) {
           }
 
           const totalValue = msg.trade_price * msg.trade_volume;
+          const recordId =
+            msg.sequential_id != null
+              ? String(msg.sequential_id)
+              : `${msg.timestamp}-${msg.trade_price}-${msg.trade_volume}`;
+
           const record: TradeRecord = {
-            id: `${msg.sequential_id}-${msg.timestamp}`,
+            id: recordId,
             market: msg.code,
             price: msg.trade_price,
             volume: msg.trade_volume,

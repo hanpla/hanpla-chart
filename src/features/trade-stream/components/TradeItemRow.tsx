@@ -31,31 +31,31 @@ export const TradeItemRow: React.FC<TradeItemRowProps> = React.memo(
     return (
       <div
         style={style}
-        className={`grid grid-cols-12 items-center px-2.5 font-mono text-xs transition-colors ${whaleBgClass}`}
+        className={`grid select-none grid-cols-12 items-center border-b border-zinc-900/40 bg-zinc-950 px-2.5 font-mono text-xs transition-colors ${whaleBgClass}`}
       >
         {/* Col 1: Timestamp & Whale Badge (3 cols) */}
-        <div className="col-span-3 flex items-center gap-1 overflow-hidden text-[11px] text-zinc-500">
-          <span>{item.formattedTime}</span>
+        <div className="col-span-3 flex items-center gap-1 overflow-hidden whitespace-nowrap text-[11px] text-zinc-400">
+          <span className="tabular-nums">{item.formattedTime}</span>
           {isMega && (
-            <Badge intent="whale" size="xs">
+            <Badge intent="whale" size="xs" className="px-1 py-0 text-[9px]">
               WHALE
             </Badge>
           )}
         </div>
 
-        {/* Col 2: Price (3 cols) */}
+        {/* Col 2: Price (4 cols) */}
         <div
-          className={`col-span-3 text-right font-medium ${textColorClass} ${
+          className={`col-span-4 truncate whitespace-nowrap text-right font-semibold tabular-nums ${textColorClass} ${
             isMega || isLarge ? "font-bold" : ""
           }`}
         >
           {formatTickerPrice(item.price)}
         </div>
 
-        {/* Col 3: Volume (3 cols) */}
+        {/* Col 3: Volume (2 cols) */}
         <div
-          className={`col-span-3 text-right text-[11px] ${
-            isBid ? "text-emerald-300" : "text-rose-300"
+          className={`col-span-2 truncate whitespace-nowrap text-right text-[11px] tabular-nums ${
+            isBid ? "text-emerald-300/90" : "text-rose-300/90"
           }`}
         >
           {formatVolumeAmount(item.volume)}
@@ -63,7 +63,7 @@ export const TradeItemRow: React.FC<TradeItemRowProps> = React.memo(
 
         {/* Col 4: Total Value (3 cols) */}
         <div
-          className={`col-span-3 text-right text-[11px] ${
+          className={`col-span-3 truncate whitespace-nowrap text-right text-[11px] tabular-nums ${
             isMega ? "font-bold text-amber-300" : "text-zinc-400"
           }`}
         >

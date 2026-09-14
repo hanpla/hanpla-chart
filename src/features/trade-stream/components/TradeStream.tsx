@@ -13,23 +13,32 @@ export const TradeStream: React.FC = () => {
 
   const parentRef = useRef<HTMLDivElement>(null);
 
+  const getItemKey = React.useCallback(
+    (index: number) => trades[index]?.id ?? index,
+    [trades],
+  );
+
   const rowVirtualizer = useVirtualizer({
     count: trades.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => ROW_HEIGHT,
+    getItemKey,
     overscan: 5, // Maintains exactly 20-25 DOM nodes in view
   });
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden bg-zinc-950/70 p-2.5">
       {/* Title Header */}
-      <div className="flex items-center justify-between pb-2 text-xs font-semibold text-zinc-400">
+      <div className="flex items-center justify-between pb-2 text-xs font-semibold text-zinc-300">
         <div className="flex items-center gap-1.5 font-mono">
           <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-          <span>REALTIME TRADES</span>
+          <span className="font-sans font-medium text-zinc-200">
+            실시간 체결
+          </span>
+          <span className="text-[10px] text-zinc-500">REALTIME TRADES</span>
         </div>
         <div className="flex items-center gap-2 font-mono text-[11px] text-zinc-500">
-          <span>{currentSymbol}</span>
+          <span className="font-semibold text-zinc-400">{currentSymbol}</span>
           <span>{trades.length}건 누적</span>
         </div>
       </div>
@@ -40,7 +49,7 @@ export const TradeStream: React.FC = () => {
       {/* Virtualized Scroll Container */}
       <div
         ref={parentRef}
-        className="relative flex-1 overflow-y-auto overflow-x-hidden pt-1"
+        className="relative flex-1 overflow-y-auto overflow-x-hidden pt-0.5"
       >
         {isLoading && trades.length === 0 ? (
           <div className="flex h-40 flex-col items-center justify-center gap-2 font-mono text-xs text-zinc-500">
@@ -65,7 +74,7 @@ export const TradeStream: React.FC = () => {
 
               return (
                 <TradeItemRow
-                  key={item.id}
+                  key={virtualRow.key}
                   item={item}
                   style={{
                     position: "absolute",
