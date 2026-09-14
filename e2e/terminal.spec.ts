@@ -9,15 +9,16 @@ test.describe("PulseStream Financial Terminal E2E", () => {
     page,
   }) => {
     // 1. Verify Header branding and default symbol
-    await expect(page.locator("header")).toBeVisible();
-    await expect(page.getByText("PULSE")).toBeVisible();
-    await expect(page.getByText("STREAM")).toBeVisible();
+    const header = page.locator("header");
+    await expect(header).toBeVisible();
+    await expect(header.getByText("PULSE")).toBeVisible();
+    await expect(header.getByText("STREAM")).toBeVisible();
 
-    // 2. Verify Performance HUD trigger widget
-    const hudTrigger = page.getByTitle("성능 진단 HUD 열기/닫기");
-    await expect(hudTrigger).toBeVisible();
-    await expect(hudTrigger).toContainText("FPS");
-    await expect(hudTrigger).toContainText("ms");
+    // 2. Verify Performance Diagnostics trigger widget
+    const diagTrigger = page.getByRole("button", {
+      name: "엔진 성능 진단 팝오버 토글",
+    });
+    await expect(diagTrigger).toBeVisible();
 
     // 3. Verify main 3-column terminal sections
     await expect(
@@ -34,8 +35,8 @@ test.describe("PulseStream Financial Terminal E2E", () => {
     await expect(ethBtn).toBeVisible();
     await ethBtn.click();
 
-    // Verify header updates to KRW-ETH
-    await expect(page.locator("header")).toContainText("KRW-ETH");
+    // Verify header updates to ETH
+    await expect(page.locator("header")).toContainText("ETH");
 
     // 2. Search in watchlist and filter
     const searchInput = page.getByPlaceholder(
@@ -47,7 +48,7 @@ test.describe("PulseStream Financial Terminal E2E", () => {
     // Click Bitcoin button in quick selector to switch back
     const btcBtn = page.getByRole("button", { name: "KRW-BTC" });
     await btcBtn.click();
-    await expect(page.locator("header")).toContainText("KRW-BTC");
+    await expect(page.locator("header")).toContainText("BTC");
   });
 
   test("should switch right panel views between Split, OrderBook, and Trades tabs", async ({
@@ -75,30 +76,25 @@ test.describe("PulseStream Financial Terminal E2E", () => {
     await expect(page.getByText("REALTIME TRADES")).toBeVisible();
   });
 
-  test("should open and close Performance HUD modal with live metrics", async ({
+  test("should open and close Performance diagnostics popover with live telemetry", async ({
     page,
   }) => {
-    const hudTrigger = page.getByTitle("성능 진단 HUD 열기/닫기");
-    await hudTrigger.click();
+    const diagTrigger = page.getByRole("button", {
+      name: "엔진 성능 진단 팝오버 토글",
+    });
+    await diagTrigger.click();
 
-    // Verify modal elements
-    await expect(page.getByText("PERFORMANCE HUD")).toBeVisible();
-    await expect(page.getByText("FRAME RATE")).toBeVisible();
-    await expect(page.getByText("EVENT LOOP LAG")).toBeVisible();
-    await expect(page.getByText("THROUGHPUT")).toBeVisible();
-    await expect(page.getByText("ACTIVE DOM NODES")).toBeVisible();
-    await expect(page.getByText("60 FPS Defense Stack Active")).toBeVisible();
+    // Verify popover elements
+    await expect(page.getByText("실시간 엔진 텔레메트리")).toBeVisible();
+    await expect(page.getByText("누적 틱 스트림:")).toBeVisible();
+    await expect(page.getByText("렌더링 프레임 / 지연:")).toBeVisible();
+    await expect(page.getByText(/FPS/).first()).toBeVisible();
+    await expect(page.getByText(/ms/).first()).toBeVisible();
 
-    // Close modal via Escape key
-    await page.keyboard.press("Escape");
-    await expect(page.getByText("PERFORMANCE HUD")).not.toBeVisible();
-
-    // Reopen and close via close button
-    await hudTrigger.click();
-    await expect(page.getByText("PERFORMANCE HUD")).toBeVisible();
-    const closeBtn = page.getByLabel("닫기");
+    // Close popover via close button
+    const closeBtn = page.getByRole("button", { name: "진단 닫기" });
     await closeBtn.click();
-    await expect(page.getByText("PERFORMANCE HUD")).not.toBeVisible();
+    await expect(page.getByText("실시간 엔진 텔레메트리")).not.toBeVisible();
   });
 
   test("should toggle chart technical indicators SMA and Bollinger Bands", async ({

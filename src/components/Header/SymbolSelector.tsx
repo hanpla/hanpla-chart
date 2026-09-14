@@ -29,6 +29,7 @@ export const SymbolSelector: React.FC = React.memo(() => {
             isActive={isSelected}
             onClick={() => setSymbol(item.symbol)}
             title={`${item.name} (${item.symbol})`}
+            aria-label={item.symbol}
             className="h-6 px-2 font-mono text-[11px]"
           >
             {item.label}

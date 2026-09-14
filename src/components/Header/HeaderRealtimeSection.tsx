@@ -147,6 +147,7 @@ export const HeaderRealtimeSection: React.FC = React.memo(() => {
               <button
                 type="button"
                 onClick={() => setIsDiagnosticsOpen(false)}
+                aria-label="진단 닫기"
                 className="text-zinc-500 hover:text-zinc-300"
               >
                 <X className="h-3.5 w-3.5" />
