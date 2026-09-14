@@ -19,7 +19,7 @@ export const App: React.FC = () => {
   const [rightTab, setRightTab] = useState<RightPanelTab>("split");
 
   return (
-    <div className="flex h-screen w-screen select-none flex-col overflow-hidden bg-zinc-950 font-mono text-zinc-100 antialiased">
+    <div className="flex h-screen w-screen select-none flex-col overflow-hidden bg-zinc-950 font-sans text-zinc-100 antialiased">
       {/* Top Header Bar */}
       <header className="flex h-12 w-full items-center justify-between border-b border-zinc-800 bg-zinc-900/60 px-4 backdrop-blur-sm">
         <div className="flex items-center gap-3">

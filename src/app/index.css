@@ -1,3 +1,5 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,11 +11,26 @@
     --color-neutral: #71717a;
   }
 
+  html,
   body {
     background-color: #09090b;
     color: #f4f4f5;
     font-family:
-      "JetBrains Mono", SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      "Pretendard Variable",
+      Pretendard,
+      -apple-system,
+      BlinkMacSystemFont,
+      system-ui,
+      Roboto,
+      "Helvetica Neue",
+      "Segoe UI",
+      "Apple SD Gothic Neo",
+      "Noto Sans KR",
+      "Malgun Gothic",
+      "Apple Color Emoji",
+      "Segoe UI Emoji",
+      "Segoe UI Symbol",
+      sans-serif;
   }
 
   /* Custom scrollbar for financial terminal tables */
