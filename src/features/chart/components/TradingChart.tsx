@@ -1,16 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useMarketStore } from "@/stores";
 import { useTradingChart } from "../hooks/useTradingChart";
 import { ChartHeader } from "./ChartHeader";
-import type { ChartTimeframe } from "../types/chart";
+import type {
+  ChartTimeframe,
+  ActiveIndicators,
+  IndicatorKey,
+} from "../types/chart";
 
 export const TradingChart: React.FC = () => {
   const currentSymbol = useMarketStore((state) => state.currentSymbol);
   const [timeframe, setTimeframe] = useState<ChartTimeframe>("1m");
+  const [activeIndicators, setActiveIndicators] = useState<ActiveIndicators>({
+    sma20: true,
+    sma60: false,
+    sma120: false,
+    bollinger: false,
+  });
 
-  const { containerRef, currentOHLV, isLoading } = useTradingChart({
+  const handleToggleIndicator = useCallback((key: IndicatorKey) => {
+    setActiveIndicators((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  }, []);
+
+  const {
+    containerRef,
+    currentOHLV,
+    isLoading,
+    indicatorExecutionTimeMs,
+    isCalculatingIndicators,
+  } = useTradingChart({
     symbol: currentSymbol,
     timeframe,
+    activeIndicators,
   });
 
   return (
@@ -22,6 +46,10 @@ export const TradingChart: React.FC = () => {
         onTimeframeChange={setTimeframe}
         ohlv={currentOHLV}
         isLoading={isLoading}
+        activeIndicators={activeIndicators}
+        onToggleIndicator={handleToggleIndicator}
+        indicatorExecutionTimeMs={indicatorExecutionTimeMs}
+        isCalculatingIndicators={isCalculatingIndicators}
       />
 
       {/* Canvas Mount Container */}

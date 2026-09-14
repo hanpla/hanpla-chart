@@ -31,3 +31,12 @@ export interface ChartOHLV {
   close: number;
   volume: number;
 }
+
+export interface ActiveIndicators {
+  sma20: boolean;
+  sma60: boolean;
+  sma120: boolean;
+  bollinger: boolean;
+}
+
+export type IndicatorKey = keyof ActiveIndicators;

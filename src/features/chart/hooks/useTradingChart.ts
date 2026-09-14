@@ -3,6 +3,7 @@ import {
   createChart,
   CandlestickSeries,
   HistogramSeries,
+  LineSeries,
   ColorType,
   type IChartApi,
   type ISeriesApi,
@@ -18,6 +19,7 @@ import type {
   ChartTimeframe,
   CandleDataPoint,
   ChartOHLV,
+  ActiveIndicators,
 } from "../types/chart";
 import {
   parseUpbitCandles,
@@ -26,21 +28,40 @@ import {
   UP_COLOR,
   DOWN_COLOR,
 } from "../utils/candle-aggregator";
+import { useIndicatorWorker } from "./useIndicatorWorker";
 
 export interface UseTradingChartOptions {
   symbol: string;
   timeframe: ChartTimeframe;
+  activeIndicators: ActiveIndicators;
 }
 
-export function useTradingChart({ symbol, timeframe }: UseTradingChartOptions) {
+export function useTradingChart({
+  symbol,
+  timeframe,
+  activeIndicators,
+}: UseTradingChartOptions) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const candleSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
   const volumeSeriesRef = useRef<ISeriesApi<"Histogram"> | null>(null);
 
+  // Technical Indicator Series Refs
+  const sma20SeriesRef = useRef<ISeriesApi<"Line"> | null>(null);
+  const sma60SeriesRef = useRef<ISeriesApi<"Line"> | null>(null);
+  const sma120SeriesRef = useRef<ISeriesApi<"Line"> | null>(null);
+  const bbUpperSeriesRef = useRef<ISeriesApi<"Line"> | null>(null);
+  const bbMiddleSeriesRef = useRef<ISeriesApi<"Line"> | null>(null);
+  const bbLowerSeriesRef = useRef<ISeriesApi<"Line"> | null>(null);
+
   const lastCandleRef = useRef<CandleDataPoint | null>(null);
   const [currentOHLV, setCurrentOHLV] = useState<ChartOHLV | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  const activeIndicatorsRef = useRef(activeIndicators);
+  useEffect(() => {
+    activeIndicatorsRef.current = activeIndicators;
+  }, [activeIndicators]);
 
   const timeframeOption = getTimeframeOption(timeframe);
   const timeframeUnitRef = useRef(timeframeOption.unit);
@@ -48,6 +69,14 @@ export function useTradingChart({ symbol, timeframe }: UseTradingChartOptions) {
   useEffect(() => {
     timeframeUnitRef.current = timeframeOption.unit;
   }, [timeframeOption.unit]);
+
+  // Web Worker offloaded indicator calculations
+  const {
+    indicators,
+    isCalculating: isCalculatingIndicators,
+    executionTimeMs: indicatorExecutionTimeMs,
+    calculate: calculateIndicators,
+  } = useIndicatorWorker();
 
   // 1. Initialize Lightweight Charts canvas instance
   useEffect(() => {
@@ -117,9 +146,67 @@ export function useTradingChart({ symbol, timeframe }: UseTradingChartOptions) {
       },
     });
 
+    // Technical indicator line series (SMA 20, 60, 120, Bollinger Bands)
+    const sma20 = chart.addSeries(LineSeries, {
+      color: "#facc15", // yellow-400
+      lineWidth: 2,
+      priceLineVisible: false,
+      lastValueVisible: false,
+    });
+    sma20.applyOptions({ visible: activeIndicatorsRef.current.sma20 });
+
+    const sma60 = chart.addSeries(LineSeries, {
+      color: "#a855f7", // purple-500
+      lineWidth: 2,
+      priceLineVisible: false,
+      lastValueVisible: false,
+    });
+    sma60.applyOptions({ visible: activeIndicatorsRef.current.sma60 });
+
+    const sma120 = chart.addSeries(LineSeries, {
+      color: "#38bdf8", // sky-400
+      lineWidth: 2,
+      priceLineVisible: false,
+      lastValueVisible: false,
+    });
+    sma120.applyOptions({ visible: activeIndicatorsRef.current.sma120 });
+
+    const bbUpper = chart.addSeries(LineSeries, {
+      color: "rgba(52, 211, 153, 0.8)", // emerald-400
+      lineWidth: 1,
+      lineStyle: 2, // dashed
+      priceLineVisible: false,
+      lastValueVisible: false,
+    });
+    bbUpper.applyOptions({ visible: activeIndicatorsRef.current.bollinger });
+
+    const bbMiddle = chart.addSeries(LineSeries, {
+      color: "rgba(52, 211, 153, 0.4)",
+      lineWidth: 1,
+      lineStyle: 0,
+      priceLineVisible: false,
+      lastValueVisible: false,
+    });
+    bbMiddle.applyOptions({ visible: activeIndicatorsRef.current.bollinger });
+
+    const bbLower = chart.addSeries(LineSeries, {
+      color: "rgba(52, 211, 153, 0.8)",
+      lineWidth: 1,
+      lineStyle: 2,
+      priceLineVisible: false,
+      lastValueVisible: false,
+    });
+    bbLower.applyOptions({ visible: activeIndicatorsRef.current.bollinger });
+
     chartRef.current = chart;
     candleSeriesRef.current = candleSeries;
     volumeSeriesRef.current = volumeSeries;
+    sma20SeriesRef.current = sma20;
+    sma60SeriesRef.current = sma60;
+    sma120SeriesRef.current = sma120;
+    bbUpperSeriesRef.current = bbUpper;
+    bbMiddleSeriesRef.current = bbMiddle;
+    bbLowerSeriesRef.current = bbLower;
 
     // ResizeObserver for responsive layout
     const resizeObserver = new ResizeObserver((entries) => {
@@ -138,10 +225,27 @@ export function useTradingChart({ symbol, timeframe }: UseTradingChartOptions) {
       chartRef.current = null;
       candleSeriesRef.current = null;
       volumeSeriesRef.current = null;
+      sma20SeriesRef.current = null;
+      sma60SeriesRef.current = null;
+      sma120SeriesRef.current = null;
+      bbUpperSeriesRef.current = null;
+      bbMiddleSeriesRef.current = null;
+      bbLowerSeriesRef.current = null;
     };
   }, []); // Mounted once per container lifecycle
 
-  // 2. Load historical candles whenever symbol or timeframe changes
+  // 2. Dynamically update indicator series visibility when activeIndicators changes
+  useEffect(() => {
+    sma20SeriesRef.current?.applyOptions({ visible: activeIndicators.sma20 });
+    sma60SeriesRef.current?.applyOptions({ visible: activeIndicators.sma60 });
+    sma120SeriesRef.current?.applyOptions({ visible: activeIndicators.sma120 });
+    const bbVisible = activeIndicators.bollinger;
+    bbUpperSeriesRef.current?.applyOptions({ visible: bbVisible });
+    bbMiddleSeriesRef.current?.applyOptions({ visible: bbVisible });
+    bbLowerSeriesRef.current?.applyOptions({ visible: bbVisible });
+  }, [activeIndicators]);
+
+  // 3. Load historical candles whenever symbol or timeframe changes
   useEffect(() => {
     let isCancelled = false;
     setIsLoading(true);
@@ -173,6 +277,12 @@ export function useTradingChart({ symbol, timeframe }: UseTradingChartOptions) {
               volume: latest.volume,
             });
 
+            // Offload technical indicators calculation to Web Worker
+            calculateIndicators(candles, {
+              smaPeriods: [20, 60, 120],
+              bollinger: { period: 20, multiplier: 2 },
+            });
+
             // Adjust chart to fit data
             chartRef.current?.timeScale().fitContent();
           }
@@ -191,9 +301,29 @@ export function useTradingChart({ symbol, timeframe }: UseTradingChartOptions) {
     return () => {
       isCancelled = true;
     };
-  }, [symbol, timeframeOption.unit]);
+  }, [symbol, timeframeOption.unit, calculateIndicators]);
 
-  // 3. Realtime tick merge directly on Lightweight Charts series (Zero React re-render)
+  // 4. Update indicator line series data when worker computation finishes
+  useEffect(() => {
+    if (!indicators) return;
+
+    if (indicators.sma[20] && sma20SeriesRef.current) {
+      sma20SeriesRef.current.setData(indicators.sma[20]);
+    }
+    if (indicators.sma[60] && sma60SeriesRef.current) {
+      sma60SeriesRef.current.setData(indicators.sma[60]);
+    }
+    if (indicators.sma[120] && sma120SeriesRef.current) {
+      sma120SeriesRef.current.setData(indicators.sma[120]);
+    }
+    if (indicators.bollinger) {
+      bbUpperSeriesRef.current?.setData(indicators.bollinger.upper);
+      bbMiddleSeriesRef.current?.setData(indicators.bollinger.middle);
+      bbLowerSeriesRef.current?.setData(indicators.bollinger.lower);
+    }
+  }, [indicators]);
+
+  // 5. Realtime tick merge directly on Lightweight Charts series (Zero React re-render)
   useWebSocketBatch(
     useCallback(
       (batch: UpbitWebSocketMessage[]) => {
@@ -270,5 +400,7 @@ export function useTradingChart({ symbol, timeframe }: UseTradingChartOptions) {
     containerRef,
     currentOHLV,
     isLoading,
+    indicatorExecutionTimeMs,
+    isCalculatingIndicators,
   };
 }
