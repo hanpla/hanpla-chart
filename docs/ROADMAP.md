@@ -70,18 +70,18 @@
 
 ### 세부 태스크
 
-- [ ] **Web Worker 연산 오프로딩 (`src/workers/`)**
-  - [ ] `indicator.worker.ts` 작성 (이동평균선 SMA 20/60/120, 볼린저 밴드 연산)
-  - [ ] Worker 통신 래퍼 훅 (`useIndicatorWorker`) 구현
-  - [ ] 메인 스레드 연산 시간과 Worker 분리 후의 프레임 유지율 비교
-- [ ] **호가창 및 리스트 렌더링 최적화**
-  - [ ] 호가 Row 컴포넌트에 React.memo 및 세분화된 Zustand Selector 적용
-  - [ ] CSS Custom Property(`--depth-ratio`) 기반 게이지 바 업데이트로 리렌더링 제거
-- [ ] **실시간 성능 진단 HUD (`src/components/PerformanceHud/`)**
-  - [ ] 실시간 FPS 카운터 구현 (`requestAnimationFrame` 델타 기반)
-  - [ ] 메인 스레드 Latency 측정 위젯
-  - [ ] 초당 처리 틱(TPS) 및 화면 내 DOM 노드 수 실시간 표시
-  - [ ] 토글 가능한 다크 테마 금융 HUD UI 완성
+- [x] **Web Worker 연산 오프로딩 (`src/workers/`)**
+  - [x] `indicator.worker.ts` 작성 (이동평균선 SMA 20/60/120, 볼린저 밴드 연산)
+  - [x] Worker 통신 래퍼 훅 (`useIndicatorWorker`) 구현
+  - [x] 메인 스레드 연산 시간과 Worker 분리 후의 프레임 유지율 비교
+- [x] **호가창 및 리스트 렌더링 최적화**
+  - [x] 호가 Row 컴포넌트에 React.memo 및 세분화된 Zustand Selector 적용
+  - [x] CSS Custom Property(`--depth-ratio`) 기반 게이지 바 업데이트로 리렌더링 제거
+- [x] **실시간 성능 진단 HUD (`src/components/PerformanceHud/`)**
+  - [x] 실시간 FPS 카운터 구현 (`requestAnimationFrame` 델타 기반)
+  - [x] 메인 스레드 Latency 측정 위젯
+  - [x] 초당 처리 틱(TPS) 및 화면 내 DOM 노드 수 실시간 표시
+  - [x] 토글 가능한 다크 테마 금융 HUD UI 완성
 
 ---
 

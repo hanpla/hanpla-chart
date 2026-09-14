@@ -33,7 +33,7 @@ export const App: React.FC = () => {
             </span>
           </div>
           <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-400">
-            Phase 2
+            Phase 3
           </span>
           <div className="mx-1 h-4 w-px bg-zinc-800" aria-hidden="true" />
 
@@ -147,6 +147,7 @@ export const App: React.FC = () => {
           <span>Engine: Vite + React 19 Strict</span>
           <span>Chart: Lightweight Charts (Canvas)</span>
           <span>Pipeline: RingBuffer + RAFScheduler (60FPS)</span>
+          <span>Worker: SMA / Bollinger Bands</span>
         </div>
         <div className="flex items-center gap-3">
           <span>Upbit Public Feed: {connectionStatus}</span>
