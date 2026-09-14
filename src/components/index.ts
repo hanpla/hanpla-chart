@@ -1,2 +1,1 @@
-// Public exports for components
-export {};
+export * from "./Header";

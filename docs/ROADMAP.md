@@ -25,17 +25,17 @@
   - [x] Vite + React 19 + TypeScript (Strict) 보일러플레이트 구성
   - [x] Tailwind CSS + CVA + Lucide Icons 환경 설정
   - [x] ESLint 9 Flat Config + Prettier + Husky + lint-staged 연동
-- [ ] **WebSocket 통신 계층 (`src/services/websocket/`)**
-  - [ ] `WebSocketManager` 클래스 구현
-  - [ ] 업비트 Public WebSocket 연동 (Blob 바이너리 포맷 수신 처리)
-  - [ ] 지수 백오프(Exponential Backoff) 기반 자동 재연결 로직 구현
-  - [ ] Heartbeat Ping-Pong 및 탭 복귀 감지 메커니즘 구축
+- [x] **WebSocket 통신 계층 (`src/services/websocket/`)**
+  - [x] `WebSocketManager` 클래스 구현
+  - [x] 업비트 Public WebSocket 연동 (Blob 바이너리 포맷 수신 처리)
+  - [x] 지수 백오프(Exponential Backoff) 기반 자동 재연결 로직 구현
+  - [x] Heartbeat Ping-Pong 및 탭 복귀 감지 메커니즘 구축
 - [x] **인메모리 버퍼링 파이프라인 (`src/utils/`)**
   - [x] 고정 크기(2048) `CircularRingBuffer` 자료구조 구현
   - [x] 16.6ms(60FPS) 주기 `RAFScheduler` 배치 플러시 모듈 구현
   - [x] 링 버퍼 및 스케줄러에 대한 Vitest 단위 테스트 케이스 100% 작성
-- [ ] **전역 기본 스토어 (`src/stores/`)**
-  - [ ] Zustand 마켓 선택 스토어 (`useMarketStore`) 구성 (현재 심볼, 연결 상태)
+- [x] **전역 기본 스토어 (`src/stores/`)**
+  - [x] Zustand 마켓 선택 스토어 (`useMarketStore`) 구성 (현재 심볼, 연결 상태)
 
 ---
 

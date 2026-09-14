@@ -9,6 +9,8 @@
 export class CircularRingBuffer<T> {
   private readonly buffer: (T | undefined)[];
   private readonly capacity: number;
+  private readonly isPowerOfTwo: boolean;
+  private readonly mask: number;
   private head: number = 0; // Next insertion index
   private tail: number = 0; // Oldest item index
   private count: number = 0;
@@ -20,6 +22,8 @@ export class CircularRingBuffer<T> {
       );
     }
     this.capacity = capacity;
+    this.isPowerOfTwo = (capacity & (capacity - 1)) === 0;
+    this.mask = capacity - 1;
     this.buffer = new Array<T | undefined>(capacity);
   }
 
@@ -32,11 +36,15 @@ export class CircularRingBuffer<T> {
     const isOverwriting = this.count === this.capacity;
 
     this.buffer[this.head] = item;
-    this.head = (this.head + 1) % this.capacity;
+    this.head = this.isPowerOfTwo
+      ? (this.head + 1) & this.mask
+      : (this.head + 1) % this.capacity;
 
     if (isOverwriting) {
       // Overwritten oldest item, advance tail
-      this.tail = (this.tail + 1) % this.capacity;
+      this.tail = this.isPowerOfTwo
+        ? (this.tail + 1) & this.mask
+        : (this.tail + 1) % this.capacity;
       return false;
     }
 
@@ -56,7 +64,9 @@ export class CircularRingBuffer<T> {
     const item = this.buffer[this.tail];
     // Release reference to avoid memory retention
     this.buffer[this.tail] = undefined;
-    this.tail = (this.tail + 1) % this.capacity;
+    this.tail = this.isPowerOfTwo
+      ? (this.tail + 1) & this.mask
+      : (this.tail + 1) % this.capacity;
     this.count--;
 
     return item;
@@ -86,7 +96,9 @@ export class CircularRingBuffer<T> {
     const result = new Array<T>(total);
 
     for (let i = 0; i < total; i++) {
-      const idx = (this.tail + i) % this.capacity;
+      const idx = this.isPowerOfTwo
+        ? (this.tail + i) & this.mask
+        : (this.tail + i) % this.capacity;
       result[i] = this.buffer[idx] as T;
       this.buffer[idx] = undefined;
     }
@@ -108,7 +120,10 @@ export class CircularRingBuffer<T> {
 
     const result = new Array<T>(this.count);
     for (let i = 0; i < this.count; i++) {
-      result[i] = this.buffer[(this.tail + i) % this.capacity] as T;
+      const idx = this.isPowerOfTwo
+        ? (this.tail + i) & this.mask
+        : (this.tail + i) % this.capacity;
+      result[i] = this.buffer[idx] as T;
     }
 
     return result;
