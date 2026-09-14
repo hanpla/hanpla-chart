@@ -14,23 +14,34 @@ import { OrderBook } from "@/features/orderbook";
 
 type RightPanelTab = "split" | "orderbook" | "trades";
 
-// Real-time Digital Clock for professional financial terminal footer
+// Real-time KST Digital Clock for professional financial terminal footer
+const getKstTimeString = (): string => {
+  const formatter = new Intl.DateTimeFormat("ko-KR", {
+    timeZone: "Asia/Seoul",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+  const parts = formatter.formatToParts(new Date());
+  const map: Record<string, string> = {};
+  for (let i = 0; i < parts.length; i++) {
+    const p = parts[i];
+    if (p) map[p.type] = p.value;
+  }
+  return `${map.year}-${map.month}-${map.day} ${map.hour}:${map.minute}:${map.second} KST`;
+};
+
 const DigitalClock: React.FC = () => {
-  const [timeStr, setTimeStr] = useState<string>("");
+  const [timeStr, setTimeStr] = useState<string>(getKstTimeString);
 
   React.useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      const y = now.getFullYear();
-      const m = String(now.getMonth() + 1).padStart(2, "0");
-      const d = String(now.getDate()).padStart(2, "0");
-      const hh = String(now.getHours()).padStart(2, "0");
-      const mm = String(now.getMinutes()).padStart(2, "0");
-      const ss = String(now.getSeconds()).padStart(2, "0");
-      setTimeStr(`${y}-${m}-${d} ${hh}:${mm}:${ss} KST`);
-    };
-    updateTime();
-    const timer = setInterval(updateTime, 1000);
+    const timer = setInterval(() => {
+      setTimeStr(getKstTimeString());
+    }, 1000);
     return () => clearInterval(timer);
   }, []);
 

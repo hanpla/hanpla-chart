@@ -1,10 +1,21 @@
-import React, { useState, useCallback, useRef, useEffect } from "react";
+import React, {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  useMemo,
+} from "react";
 import { Activity, X } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { useMarketStore } from "@/stores";
 import { useWebSocketStream } from "@/services/websocket";
 import { isUpbitTicker } from "@/types/websocket";
 import type { UpbitWebSocketMessage } from "@/types/websocket";
-import { fetchMarketTickers } from "@/services/api";
+import {
+  fetchMarketTickers,
+  fetchKrwMarkets,
+  type UpbitMarketInfo,
+} from "@/services/api";
 import { PerformanceHud } from "@/components/PerformanceHud";
 import { HeaderConnectionBadge } from "./HeaderConnectionBadge";
 import { HeaderMarketTicker } from "./HeaderMarketTicker";
@@ -22,6 +33,24 @@ interface DetailedTickerData {
 export const HeaderRealtimeSection: React.FC = React.memo(() => {
   const currentSymbol = useMarketStore((state) => state.currentSymbol);
 
+  // Dynamic Korean name lookup from React Query cached market list
+  const { data: markets = [] } = useQuery<UpbitMarketInfo[]>({
+    queryKey: ["markets", "krw"],
+    queryFn: fetchKrwMarkets,
+    staleTime: 1000 * 60 * 10,
+  });
+
+  const koreanNameMap = useMemo(() => {
+    const map = new Map<string, string>();
+    for (let i = 0; i < markets.length; i++) {
+      const m = markets[i];
+      if (m) map.set(m.market, m.korean_name);
+    }
+    return map;
+  }, [markets]);
+
+  const currentKoreanName = koreanNameMap.get(currentSymbol);
+
   const [tickerData, setTickerData] = useState<DetailedTickerData>({
     price: null,
     changeRate: null,
@@ -36,24 +65,30 @@ export const HeaderRealtimeSection: React.FC = React.memo(() => {
 
   const ticksCountRef = useRef<number>(0);
   const lastTelemetryThrottleRef = useRef<number>(0);
+  const lastTickerThrottleRef = useRef<number>(0);
+  const latestTickerRef = useRef<DetailedTickerData | null>(null);
 
   // 1. Initial REST ticker fetch on symbol change
   useEffect(() => {
     let isCancelled = false;
+    latestTickerRef.current = null;
+    lastTickerThrottleRef.current = 0;
 
     async function loadTicker() {
       try {
         const tickers = await fetchMarketTickers([currentSymbol]);
         const initial = tickers[0];
         if (initial && !isCancelled) {
-          setTickerData({
+          const data: DetailedTickerData = {
             price: initial.trade_price,
             changeRate: initial.signed_change_rate,
             changePrice: initial.signed_change_price,
             highPrice: initial.high_price,
             lowPrice: initial.low_price,
             accTradePrice24h: initial.acc_trade_price_24h,
-          });
+          };
+          latestTickerRef.current = data;
+          setTickerData(data);
         }
       } catch (err) {
         console.warn("Failed to load initial header ticker:", err);
@@ -67,30 +102,43 @@ export const HeaderRealtimeSection: React.FC = React.memo(() => {
     };
   }, [currentSymbol]);
 
-  // 2. Real-time stream processing
+  // 2. Real-time stream processing with 100ms (10Hz) throttling
   const handleBatch = useCallback(
     (batch: UpbitWebSocketMessage[]) => {
       ticksCountRef.current += batch.length;
 
       // Scan batch from latest to oldest for the current symbol's ticker
+      let foundTicker = false;
       for (let i = batch.length - 1; i >= 0; i--) {
         const msg = batch[i];
         if (msg && isUpbitTicker(msg) && msg.code === currentSymbol) {
-          setTickerData({
+          latestTickerRef.current = {
             price: msg.trade_price,
             changeRate: msg.signed_change_rate,
             changePrice: msg.signed_change_price,
             highPrice: msg.high_price,
             lowPrice: msg.low_price,
             accTradePrice24h: msg.acc_trade_price_24h,
-          });
+          };
+          foundTicker = true;
           break;
         }
       }
 
-      // Throttle telemetry & HUD ticks updates to 250ms (4Hz)
       const now =
         typeof performance !== "undefined" ? performance.now() : Date.now();
+
+      // Strict Performance Throttling: Throttle Header Ticker setState to 100ms (10Hz)
+      if (
+        foundTicker &&
+        latestTickerRef.current &&
+        now - lastTickerThrottleRef.current >= 100
+      ) {
+        lastTickerThrottleRef.current = now;
+        setTickerData(latestTickerRef.current);
+      }
+
+      // Throttle telemetry & HUD ticks updates to 250ms (4Hz)
       if (now - lastTelemetryThrottleRef.current >= 250) {
         lastTelemetryThrottleRef.current = now;
         setTicksCount(ticksCountRef.current);
@@ -108,6 +156,7 @@ export const HeaderRealtimeSection: React.FC = React.memo(() => {
       {/* Comprehensive Realtime Market Ticker Bar */}
       <HeaderMarketTicker
         symbol={currentSymbol}
+        koreanName={currentKoreanName}
         price={tickerData.price}
         changeRate={tickerData.changeRate}
         changePrice={tickerData.changePrice}
