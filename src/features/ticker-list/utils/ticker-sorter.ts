@@ -68,8 +68,8 @@ export function sortTickers(
  * Formats price according to Korean crypto standard formatting.
  */
 export function formatTickerPrice(price: number): string {
-  if (!Number.isFinite(price)) {
-    return "0";
+  if (!Number.isFinite(price) || price <= 0) {
+    return "-";
   }
 
   if (price >= 100) {
@@ -92,7 +92,7 @@ export function formatTickerPrice(price: number): string {
  */
 export function formatTradeValue(val: number): string {
   if (!Number.isFinite(val) || val <= 0) {
-    return "0백만";
+    return "-";
   }
   const millions = Math.floor(val / 1000000);
   return `${millions.toLocaleString("ko-KR")}백만`;

@@ -85,32 +85,32 @@ export function useTickerList() {
     }, []),
   );
 
-  // 5. Build base TickerItem array
+  // 5. Build base TickerItem array (driven by markets so all coins render immediately)
   const allTickers = useMemo<TickerItem[]>(() => {
-    const marketMap = new Map(markets.map((m) => [m.market, m]));
+    const tickerMap = new Map(rawTickers.map((t) => [t.market, t]));
 
-    return rawTickers.map((ticker) => {
-      const marketInfo = marketMap.get(ticker.market);
-      const override = realtimeOverrides[ticker.market];
+    return markets.map((marketInfo) => {
+      const ticker = tickerMap.get(marketInfo.market);
+      const override = realtimeOverrides[marketInfo.market];
 
-      const tradePrice = override?.tradePrice ?? ticker.trade_price;
-      const change = override?.change ?? ticker.change;
+      const tradePrice = override?.tradePrice ?? ticker?.trade_price ?? 0;
+      const change = override?.change ?? ticker?.change ?? "EVEN";
       const signedChangeRate =
-        override?.signedChangeRate ?? ticker.signed_change_rate;
+        override?.signedChangeRate ?? ticker?.signed_change_rate ?? 0;
       const signedChangePrice =
-        override?.signedChangePrice ?? ticker.signed_change_price;
+        override?.signedChangePrice ?? ticker?.signed_change_price ?? 0;
       const accTradePrice24h =
-        override?.accTradePrice24h ?? ticker.acc_trade_price_24h;
+        override?.accTradePrice24h ?? ticker?.acc_trade_price_24h ?? 0;
       const accTradeVolume24h =
-        override?.accTradeVolume24h ?? ticker.acc_trade_volume_24h;
-      const highPrice = override?.highPrice ?? ticker.high_price;
-      const lowPrice = override?.lowPrice ?? ticker.low_price;
+        override?.accTradeVolume24h ?? ticker?.acc_trade_volume_24h ?? 0;
+      const highPrice = override?.highPrice ?? ticker?.high_price ?? 0;
+      const lowPrice = override?.lowPrice ?? ticker?.low_price ?? 0;
 
       return {
-        market: ticker.market,
-        symbol: ticker.market.replace("KRW-", ""),
-        koreanName: marketInfo?.korean_name ?? ticker.market,
-        englishName: marketInfo?.english_name ?? ticker.market,
+        market: marketInfo.market,
+        symbol: marketInfo.market.replace("KRW-", ""),
+        koreanName: marketInfo.korean_name ?? marketInfo.market,
+        englishName: marketInfo.english_name ?? marketInfo.market,
         tradePrice,
         change,
         signedChangeRate,
@@ -119,8 +119,8 @@ export function useTickerList() {
         accTradeVolume24h,
         highPrice,
         lowPrice,
-        isBookmarked: bookmarks.has(ticker.market),
-        warning: marketInfo?.market_event?.warning,
+        isBookmarked: bookmarks.has(marketInfo.market),
+        warning: marketInfo.market_event?.warning,
       };
     });
   }, [markets, rawTickers, realtimeOverrides, bookmarks]);
@@ -147,7 +147,8 @@ export function useTickerList() {
   return {
     tickers: filteredTickers,
     totalCount: allTickers.length,
-    isLoading: isMarketsLoading || isTickersLoading,
+    isLoading:
+      isMarketsLoading || (isTickersLoading && rawTickers.length === 0),
     keyword,
     setKeyword,
     tab,

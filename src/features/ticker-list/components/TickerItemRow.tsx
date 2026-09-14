@@ -14,18 +14,23 @@ export interface TickerItemRowProps {
 
 export const TickerItemRow: React.FC<TickerItemRowProps> = React.memo(
   ({ item, isSelected, onSelect, onToggleBookmark, style }) => {
-    const isRise = item.change === "RISE";
-    const isFall = item.change === "FALL";
+    const hasPrice = item.tradePrice > 0;
+    const isRise = hasPrice && item.change === "RISE";
+    const isFall = hasPrice && item.change === "FALL";
 
     const changeColorClass = isRise
       ? "text-emerald-400"
       : isFall
         ? "text-rose-400"
-        : "text-zinc-300";
+        : hasPrice
+          ? "text-zinc-300"
+          : "text-zinc-500";
 
-    const formattedRate = `${item.signedChangeRate > 0 ? "+" : ""}${(
-      item.signedChangeRate * 100
-    ).toFixed(2)}%`;
+    const formattedRate = hasPrice
+      ? `${item.signedChangeRate > 0 ? "+" : ""}${(
+          item.signedChangeRate * 100
+        ).toFixed(2)}%`
+      : "-";
 
     return (
       <div

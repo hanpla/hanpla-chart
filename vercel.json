@@ -5,11 +5,24 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
+      "source": "/api/upbit/:path*",
+      "destination": "https://api.upbit.com/v1/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
   ],
   "headers": [
+    {
+      "source": "/api/upbit/market/all",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, s-maxage=300, stale-while-revalidate=600"
+        }
+      ]
+    },
     {
       "source": "/assets/(.*)",
       "headers": [

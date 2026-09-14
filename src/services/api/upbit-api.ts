@@ -6,7 +6,24 @@ import type {
   UpbitRestOrderbook,
 } from "./types";
 
-const BASE_URL = "https://api.upbit.com/v1";
+export const DIRECT_BASE_URL = "https://api.upbit.com/v1";
+export const PROXY_BASE_URL = "/api/upbit";
+
+/**
+ * Resolves the base URL for Upbit REST requests.
+ * - In browser runtime, routes through /api/upbit proxy to eliminate
+ *   client-side Origin rate limiting (HTTP 429 Too Many Requests).
+ * - In Node.js / Vitest runtime, defaults to DIRECT_BASE_URL (absolute URL).
+ */
+export function getBaseUrl(): string {
+  if (import.meta.env.VITE_UPBIT_API_URL) {
+    return import.meta.env.VITE_UPBIT_API_URL;
+  }
+  if (typeof window !== "undefined" && window.location?.origin) {
+    return PROXY_BASE_URL;
+  }
+  return DIRECT_BASE_URL;
+}
 
 /**
  * Custom error class for Upbit API requests.
@@ -22,14 +39,56 @@ export class UpbitApiError extends Error {
 }
 
 async function request<T>(endpoint: string, init?: RequestInit): Promise<T> {
-  const url = `${BASE_URL}${endpoint}`;
-  const response = await fetch(url, {
-    ...init,
-    headers: {
-      Accept: "application/json",
-      ...init?.headers,
-    },
-  });
+  const baseUrl = getBaseUrl();
+  const url = `${baseUrl}${endpoint}`;
+
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      ...init,
+      headers: {
+        Accept: "application/json",
+        ...init?.headers,
+      },
+    });
+  } catch (networkError) {
+    // If proxy failed with a network error and we were using the proxy, attempt direct fallback
+    if (baseUrl !== DIRECT_BASE_URL) {
+      const fallbackUrl = `${DIRECT_BASE_URL}${endpoint}`;
+      response = await fetch(fallbackUrl, {
+        ...init,
+        headers: {
+          Accept: "application/json",
+          ...init?.headers,
+        },
+      });
+    } else {
+      throw networkError;
+    }
+  }
+
+  // If proxy returned 404 or 5xx, try direct fallback as well
+  if (
+    !response.ok &&
+    baseUrl !== DIRECT_BASE_URL &&
+    (response.status === 404 || response.status >= 500)
+  ) {
+    const fallbackUrl = `${DIRECT_BASE_URL}${endpoint}`;
+    try {
+      const fallbackResponse = await fetch(fallbackUrl, {
+        ...init,
+        headers: {
+          Accept: "application/json",
+          ...init?.headers,
+        },
+      });
+      if (fallbackResponse.ok) {
+        return (await fallbackResponse.json()) as T;
+      }
+    } catch {
+      // Fallback failed, continue with original error
+    }
+  }
 
   if (!response.ok) {
     throw new UpbitApiError(
@@ -53,7 +112,8 @@ export async function fetchKrwMarkets(): Promise<UpbitMarketInfo[]> {
 
 /**
  * Fetches current ticker info for a list of market codes.
- * Accepts up to ~100-300 markets per request.
+ * Chunks requests into batches of 100 markets to prevent URL length overflow
+ * and uses Promise.allSettled for fault isolation.
  */
 export async function fetchMarketTickers(
   markets: string[],
@@ -61,8 +121,34 @@ export async function fetchMarketTickers(
   if (markets.length === 0) {
     return [];
   }
-  const joined = markets.join(",");
-  return request<UpbitRestTicker[]>(`/ticker?markets=${joined}`);
+
+  const CHUNK_SIZE = 100;
+  if (markets.length <= CHUNK_SIZE) {
+    const joined = markets.join(",");
+    return request<UpbitRestTicker[]>(`/ticker?markets=${joined}`);
+  }
+
+  const chunks: string[][] = [];
+  for (let i = 0; i < markets.length; i += CHUNK_SIZE) {
+    chunks.push(markets.slice(i, i + CHUNK_SIZE));
+  }
+
+  const settled = await Promise.allSettled(
+    chunks.map((chunk) =>
+      request<UpbitRestTicker[]>(`/ticker?markets=${chunk.join(",")}`),
+    ),
+  );
+
+  const results: UpbitRestTicker[] = [];
+  for (const item of settled) {
+    if (item.status === "fulfilled" && Array.isArray(item.value)) {
+      results.push(...item.value);
+    } else if (item.status === "rejected") {
+      console.warn("Failed to fetch ticker chunk:", item.reason);
+    }
+  }
+
+  return results;
 }
 
 /**

@@ -38,6 +38,8 @@ export class WebSocketManager {
   private reconnectAttempt: number = 0;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private heartbeatTimer: ReturnType<typeof setTimeout> | null = null;
+  private connectionTimeoutTimer: ReturnType<typeof setTimeout> | null = null;
+  private readonly connectionTimeoutMs: number = 10000;
   private textDecoder: TextDecoder = new TextDecoder();
   private isDestroyed: boolean = false;
 
@@ -67,7 +69,20 @@ export class WebSocketManager {
       this.currentSymbol = symbol;
     }
 
+    // Guard: Prevent tearing down an actively connecting or open socket
+    if (
+      this.ws &&
+      (this.ws.readyState === WebSocket.OPEN ||
+        this.ws.readyState === WebSocket.CONNECTING)
+    ) {
+      if (this.ws.readyState === WebSocket.OPEN) {
+        this.sendSubscriptionPayload();
+      }
+      return;
+    }
+
     this.clearReconnectTimer();
+    this.clearConnectionTimeoutTimer();
     this.closeExistingSocket();
 
     this.setStatus(this.reconnectAttempt > 0 ? "RECONNECTING" : "CONNECTING");
@@ -82,6 +97,7 @@ export class WebSocketManager {
       socket.onclose = this.handleClose;
 
       this.ws = socket;
+      this.startConnectionTimeout();
     } catch (err) {
       this.handleError(err);
       this.scheduleReconnect();
@@ -105,6 +121,7 @@ export class WebSocketManager {
   public disconnect(): void {
     this.clearReconnectTimer();
     this.clearHeartbeatTimer();
+    this.clearConnectionTimeoutTimer();
     this.reconnectAttempt = 0;
     this.closeExistingSocket();
     this.setStatus("DISCONNECTED");
@@ -142,6 +159,7 @@ export class WebSocketManager {
       return;
     }
 
+    this.clearConnectionTimeoutTimer();
     this.reconnectAttempt = 0;
     this.setStatus("CONNECTED");
     this.sendSubscriptionPayload();
@@ -204,6 +222,7 @@ export class WebSocketManager {
       return;
     }
 
+    this.clearConnectionTimeoutTimer();
     this.clearHeartbeatTimer();
 
     if (this.status !== "DISCONNECTED") {
@@ -307,6 +326,24 @@ export class WebSocketManager {
     }
   }
 
+  private startConnectionTimeout(): void {
+    this.clearConnectionTimeoutTimer();
+    this.connectionTimeoutTimer = setTimeout(() => {
+      // Handshake timed out before reaching OPEN state
+      if (this.ws && this.ws.readyState === WebSocket.CONNECTING) {
+        this.closeExistingSocket();
+        this.scheduleReconnect();
+      }
+    }, this.connectionTimeoutMs);
+  }
+
+  private clearConnectionTimeoutTimer(): void {
+    if (this.connectionTimeoutTimer) {
+      clearTimeout(this.connectionTimeoutTimer);
+      this.connectionTimeoutTimer = null;
+    }
+  }
+
   // -------------------------------------------------------------
   // Visibility State Handling
   // -------------------------------------------------------------
@@ -317,8 +354,12 @@ export class WebSocketManager {
     }
 
     if (document.visibilityState === "visible") {
-      // When user returns to tab, ensure connection is alive
-      if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+      // When user returns to tab, only connect if socket is NOT OPEN and NOT CONNECTING
+      if (
+        !this.ws ||
+        (this.ws.readyState !== WebSocket.OPEN &&
+          this.ws.readyState !== WebSocket.CONNECTING)
+      ) {
         this.reconnectAttempt = 0;
         this.connect();
       }

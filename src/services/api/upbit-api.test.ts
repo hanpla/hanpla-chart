@@ -5,6 +5,8 @@ import {
   fetchMinuteCandles,
   fetchRecentTrades,
   fetchOrderbook,
+  getBaseUrl,
+  DIRECT_BASE_URL,
   UpbitApiError,
 } from "./upbit-api";
 
@@ -60,9 +62,38 @@ describe("upbit-api client", () => {
     const result = await fetchMarketTickers(["KRW-BTC", "KRW-ETH"]);
     expect(result).toEqual(mockTickers);
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      "https://api.upbit.com/v1/ticker?markets=KRW-BTC,KRW-ETH",
+      `${getBaseUrl()}/ticker?markets=KRW-BTC,KRW-ETH`,
       expect.objectContaining({ headers: expect.anything() }),
     );
+  });
+
+  it("fetchMarketTickers chunks requests into batches of 100", async () => {
+    const manyMarkets = Array.from({ length: 150 }, (_, i) => `KRW-COIN${i}`);
+    const mockResponse1 = Array.from({ length: 100 }, (_, i) => ({
+      market: `KRW-COIN${i}`,
+      trade_price: 100,
+    }));
+    const mockResponse2 = Array.from({ length: 50 }, (_, i) => ({
+      market: `KRW-COIN${i + 100}`,
+      trade_price: 200,
+    }));
+
+    const fetchSpy = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockResponse1,
+      } as unknown as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockResponse2,
+      } as unknown as Response);
+
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+
+    const result = await fetchMarketTickers(manyMarkets);
+    expect(result).toHaveLength(150);
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
   });
 
   it("fetchMinuteCandles constructs correct query parameters", async () => {
@@ -83,7 +114,7 @@ describe("upbit-api client", () => {
     const result = await fetchMinuteCandles("KRW-BTC", 5, 50);
     expect(result).toEqual(mockCandles);
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      "https://api.upbit.com/v1/candles/minutes/5?market=KRW-BTC&count=50",
+      `${getBaseUrl()}/candles/minutes/5?market=KRW-BTC&count=50`,
       expect.objectContaining({ headers: expect.anything() }),
     );
   });
@@ -134,7 +165,31 @@ describe("upbit-api client", () => {
     const result = await fetchRecentTrades("KRW-BTC", 10);
     expect(result).toEqual(mockTrades);
     expect(globalThis.fetch).toHaveBeenCalledWith(
-      "https://api.upbit.com/v1/trades/ticks?market=KRW-BTC&count=10",
+      `${getBaseUrl()}/trades/ticks?market=KRW-BTC&count=10`,
+      expect.objectContaining({ headers: expect.anything() }),
+    );
+  });
+
+  it("falls back to direct URL if proxy fetch throws a network error", async () => {
+    const mockData = [
+      { market: "KRW-BTC", korean_name: "비트코인", english_name: "Bitcoin" },
+    ];
+
+    const fetchSpy = vi
+      .fn()
+      .mockRejectedValueOnce(new TypeError("Failed to fetch proxy"))
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockData,
+      } as unknown as Response);
+
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+
+    const result = await fetchKrwMarkets();
+    expect(result).toHaveLength(1);
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
+    expect(fetchSpy).toHaveBeenLastCalledWith(
+      `${DIRECT_BASE_URL}/market/all?isDetails=true`,
       expect.objectContaining({ headers: expect.anything() }),
     );
   });

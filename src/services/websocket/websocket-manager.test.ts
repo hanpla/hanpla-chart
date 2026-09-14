@@ -217,4 +217,50 @@ describe("WebSocketManager", () => {
     vi.advanceTimersByTime(10000);
     expect(MockWebSocket.instances.length).toBe(1);
   });
+
+  it("should not recreate socket if connect() is called while already CONNECTING or OPEN", () => {
+    const manager = new WebSocketManager({ initialSymbol: "KRW-BTC" });
+    manager.connect();
+
+    // Still in CONNECTING state
+    expect(MockWebSocket.instances.length).toBe(1);
+    const socket = MockWebSocket.instances[0];
+
+    // Repeated connect calls should not destroy the connecting socket
+    manager.connect();
+    expect(MockWebSocket.instances.length).toBe(1);
+
+    // After OPEN
+    socket?.simulateOpen();
+    expect(manager.getStatus()).toBe("CONNECTED");
+
+    // Connect call on OPEN should preserve socket and update subscription
+    manager.connect("KRW-ETH");
+    expect(MockWebSocket.instances.length).toBe(1);
+    expect(manager.getSymbol()).toBe("KRW-ETH");
+  });
+
+  it("should trigger reconnect if initial connection handshake times out", () => {
+    const manager = new WebSocketManager({
+      baseReconnectDelayMs: 1000,
+    });
+    manager.connect();
+
+    // Stays in CONNECTING without simulating open
+    expect(MockWebSocket.instances.length).toBe(1);
+    const socket1 = MockWebSocket.instances[0];
+
+    // Advance timers past connectionTimeoutMs (10000ms)
+    vi.advanceTimersByTime(10001);
+
+    // Socket 1 should have been closed and reconnect scheduled
+    expect(socket1?.readyState).toBe(MockWebSocket.CLOSED);
+    expect(manager.getStatus()).toBe("RECONNECTING");
+
+    // Advance reconnect backoff timer
+    vi.advanceTimersByTime(3000);
+    expect(MockWebSocket.instances.length).toBe(2);
+
+    manager.destroy();
+  });
 });

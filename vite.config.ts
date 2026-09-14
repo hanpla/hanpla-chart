@@ -13,6 +13,13 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true,
+    proxy: {
+      "/api/upbit": {
+        target: "https://api.upbit.com/v1",
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/api\/upbit/, ""),
+      },
+    },
   },
   build: {
     rollupOptions: {
