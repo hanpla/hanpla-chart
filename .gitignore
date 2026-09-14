@@ -40,3 +40,7 @@ test-results
 .eslintcache
 .stylelintcache
 *.tsbuildinfo
+
+# Documentation / Personal notes
+docs/TROUBLESHOOTING.md
+
