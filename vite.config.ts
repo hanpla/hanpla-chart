@@ -14,4 +14,15 @@ export default defineConfig({
     port: 5173,
     host: true,
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "vendor-charts": ["lightweight-charts"],
+          "vendor-query": ["@tanstack/react-query", "@tanstack/react-virtual"],
+          "vendor-react": ["react", "react-dom", "zustand"],
+        },
+      },
+    },
+  },
 });

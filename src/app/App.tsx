@@ -1,11 +1,21 @@
-import React from "react";
-import { Radio, Zap } from "lucide-react";
+import React, { useState } from "react";
+import { Zap } from "lucide-react";
 import { useMarketStore } from "@/stores";
-import { SymbolSelector, HeaderRealtimeSection } from "@/components";
+import {
+  SymbolSelector,
+  HeaderRealtimeSection,
+  ErrorBoundary,
+} from "@/components";
+import { TickerList } from "@/features/ticker-list";
+import { TradingChart } from "@/features/chart";
+import { TradeStream } from "@/features/trade-stream";
+import { OrderBook } from "@/features/orderbook";
+
+type RightPanelTab = "split" | "orderbook" | "trades";
 
 export const App: React.FC = () => {
-  const currentSymbol = useMarketStore((state) => state.currentSymbol);
   const connectionStatus = useMarketStore((state) => state.connectionStatus);
+  const [rightTab, setRightTab] = useState<RightPanelTab>("split");
 
   return (
     <div className="flex h-screen w-screen select-none flex-col overflow-hidden bg-zinc-950 font-mono text-zinc-100 antialiased">
@@ -21,8 +31,8 @@ export const App: React.FC = () => {
               PULSE<span className="text-emerald-400">STREAM</span>
             </span>
           </div>
-          <span className="rounded border border-zinc-700 bg-zinc-800 px-2 py-0.5 text-xs text-zinc-400">
-            Phase 1
+          <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-400">
+            Phase 2
           </span>
           <div className="mx-1 h-4 w-px bg-zinc-800" aria-hidden="true" />
 
@@ -37,54 +47,90 @@ export const App: React.FC = () => {
       {/* Main Terminal Grid Layout */}
       <main className="grid flex-1 grid-cols-12 gap-1 overflow-hidden bg-zinc-900/20 p-1">
         {/* Left Col: Ticker Watchlist (3 cols) */}
-        <section className="col-span-3 flex flex-col rounded border border-zinc-800/80 bg-zinc-950/70 p-3">
-          <div className="flex items-center justify-between border-b border-zinc-800/60 pb-2 text-xs font-semibold text-zinc-400">
-            <span className="flex items-center gap-1.5">
-              <Radio className="h-3.5 w-3.5 text-zinc-500" aria-hidden="true" />
-              MARKETS
+        <section className="col-span-3 flex flex-col overflow-hidden rounded border border-zinc-800/80 bg-zinc-950/70">
+          <ErrorBoundary fallbackTitle="종목 감시창 오류">
+            <TickerList />
+          </ErrorBoundary>
+        </section>
+
+        {/* Center Col: Lightweight Canvas Candlestick Chart (6 cols) */}
+        <section className="col-span-6 flex flex-col overflow-hidden rounded border border-zinc-800/80 bg-zinc-950/70">
+          <ErrorBoundary fallbackTitle="Canvas 차트 엔진 오류">
+            <TradingChart />
+          </ErrorBoundary>
+        </section>
+
+        {/* Right Col: 50-Depth Orderbook & Realtime Trades (3 cols) */}
+        <section className="col-span-3 flex flex-col overflow-hidden rounded border border-zinc-800/80 bg-zinc-950/70">
+          {/* Panel Tab Switcher */}
+          <div className="flex h-7 shrink-0 items-center justify-between border-b border-zinc-800/80 bg-zinc-900/80 px-2 text-[10px]">
+            <span className="font-semibold text-zinc-400">
+              MARKET DEPTH & FEED
             </span>
-            <span className="text-[11px] text-zinc-500">KRW</span>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setRightTab("split")}
+                className={`rounded px-1.5 py-0.5 transition-colors ${
+                  rightTab === "split"
+                    ? "bg-zinc-800 font-semibold text-emerald-400"
+                    : "text-zinc-500 hover:text-zinc-300"
+                }`}
+              >
+                동시분할
+              </button>
+              <button
+                type="button"
+                onClick={() => setRightTab("orderbook")}
+                className={`rounded px-1.5 py-0.5 transition-colors ${
+                  rightTab === "orderbook"
+                    ? "bg-zinc-800 font-semibold text-emerald-400"
+                    : "text-zinc-500 hover:text-zinc-300"
+                }`}
+              >
+                호가
+              </button>
+              <button
+                type="button"
+                onClick={() => setRightTab("trades")}
+                className={`rounded px-1.5 py-0.5 transition-colors ${
+                  rightTab === "trades"
+                    ? "bg-zinc-800 font-semibold text-emerald-400"
+                    : "text-zinc-500 hover:text-zinc-300"
+                }`}
+              >
+                체결
+              </button>
+            </div>
           </div>
-          <div className="flex flex-1 items-center justify-center text-xs text-zinc-600">
-            Ticker Watchlist Module (Phase 2)
-          </div>
-        </section>
 
-        {/* Center Col: Lightweight Chart & Orderbook (6 cols) */}
-        <section className="col-span-6 flex flex-col gap-1">
-          {/* Chart Panel */}
-          <div className="flex flex-1 flex-col rounded border border-zinc-800/80 bg-zinc-950/70 p-3">
-            <div className="flex items-center justify-between border-b border-zinc-800/60 pb-2 text-xs font-semibold text-zinc-400">
-              <span>CANVAS CHART (TradingView Engine)</span>
-              <span className="text-[11px] text-emerald-400">
-                {currentSymbol} 1M
-              </span>
+          {/* Dynamic Content Views */}
+          {rightTab === "split" ? (
+            <div className="flex flex-1 flex-col overflow-hidden">
+              <div className="flex h-[56%] flex-col overflow-hidden border-b border-zinc-800/80">
+                <ErrorBoundary fallbackTitle="50단계 호가창 오류">
+                  <OrderBook />
+                </ErrorBoundary>
+              </div>
+              <div className="flex h-[44%] flex-col overflow-hidden">
+                <ErrorBoundary fallbackTitle="실시간 체결창 오류">
+                  <TradeStream />
+                </ErrorBoundary>
+              </div>
             </div>
-            <div className="flex flex-1 items-center justify-center text-xs text-zinc-600">
-              Lightweight Charts Integration (Phase 2)
+          ) : rightTab === "orderbook" ? (
+            <div className="flex flex-1 flex-col overflow-hidden">
+              <ErrorBoundary fallbackTitle="50단계 호가창 오류">
+                <OrderBook />
+              </ErrorBoundary>
             </div>
-          </div>
-          {/* Orderbook Panel */}
-          <div className="flex h-44 flex-col rounded border border-zinc-800/80 bg-zinc-950/70 p-3">
-            <div className="flex items-center justify-between border-b border-zinc-800/60 pb-2 text-xs font-semibold text-zinc-400">
-              <span>50-DEPTH ORDERBOOK</span>
-              <span className="text-[11px] text-zinc-500">Auto-Centering</span>
+          ) : (
+            <div className="flex flex-1 flex-col overflow-hidden">
+              <ErrorBoundary fallbackTitle="실시간 체결창 오류">
+                <TradeStream />
+              </ErrorBoundary>
             </div>
-            <div className="flex flex-1 items-center justify-center text-xs text-zinc-600">
-              50-Depth Visualizer Module (Phase 2)
-            </div>
-          </div>
-        </section>
-
-        {/* Right Col: Trade Stream (3 cols) */}
-        <section className="col-span-3 flex flex-col rounded border border-zinc-800/80 bg-zinc-950/70 p-3">
-          <div className="flex items-center justify-between border-b border-zinc-800/60 pb-2 text-xs font-semibold text-zinc-400">
-            <span>REALTIME TRADES</span>
-            <span className="text-[11px] text-zinc-500">Virtual DOM</span>
-          </div>
-          <div className="flex flex-1 items-center justify-center text-xs text-zinc-600">
-            Trade Stream Module (Phase 2)
-          </div>
+          )}
         </section>
       </main>
 
@@ -92,7 +138,8 @@ export const App: React.FC = () => {
       <footer className="flex h-7 w-full items-center justify-between border-t border-zinc-800/80 bg-zinc-900/90 px-3 text-[11px] text-zinc-500">
         <div className="flex items-center gap-3">
           <span>Engine: Vite + React 19 Strict</span>
-          <span>Pipeline: RingBuffer + RAFScheduler</span>
+          <span>Chart: Lightweight Charts (Canvas)</span>
+          <span>Pipeline: RingBuffer + RAFScheduler (60FPS)</span>
         </div>
         <div className="flex items-center gap-3">
           <span>Upbit Public Feed: {connectionStatus}</span>

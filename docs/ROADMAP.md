@@ -45,22 +45,22 @@
 
 ### 세부 태스크
 
-- [ ] **종목 감시창 (`src/features/ticker-list/`)**
-  - [ ] 전체 KRW 마켓 목록 TanStack Query 캐싱
-  - [ ] `@tanstack/react-virtual` 적용 가상화 종목 리스트
-  - [ ] 실시간 시세/등락률 검색, 정렬(거래대금순, 등락률순) 및 로컬스토리지 북마크
-- [ ] **Canvas 캔들 차트 (`src/features/chart/`)**
-  - [ ] TradingView `lightweight-charts` 엔진 컴포넌트 래핑
-  - [ ] 과거 캔들 REST API 로드 및 실시간 틱 캔들 머지(`update()`) 로직
-  - [ ] 차트 리사이즈 옵저버(ResizeObserver) 대응
-- [ ] **실시간 체결창 (`src/features/trade-stream/`)**
-  - [ ] 최근 1,000건 체결 링 버퍼 적재
-  - [ ] `@tanstack/react-virtual` 가상 스크롤 뷰 구현 (DOM 25개 고정)
-  - [ ] 대량 체결 발생 시 시각적 하이라이트 애니메이션
-- [ ] **50단계 실시간 호가창 (`src/features/orderbook/`)**
-  - [ ] 매수/매도 50단계 호가 테이블 렌더링
-  - [ ] 누적 수량 기반 Depth Bar 너비 계산 및 CSS Variable 주입
-  - [ ] 현재가 중심 자동 스크롤(Auto-Centering) 기능
+- [x] **종목 감시창 (`src/features/ticker-list/`)**
+  - [x] 전체 KRW 마켓 목록 TanStack Query 캐싱
+  - [x] `@tanstack/react-virtual` 적용 가상화 종목 리스트
+  - [x] 실시간 시세/등락률 검색, 정렬(거래대금순, 등락률순) 및 로컬스토리지 북마크
+- [x] **Canvas 캔들 차트 (`src/features/chart/`)**
+  - [x] TradingView `lightweight-charts` 엔진 컴포넌트 래핑
+  - [x] 과거 캔들 REST API 로드 및 실시간 틱 캔들 머지(`update()`) 로직
+  - [x] 차트 리사이즈 옵저버(ResizeObserver) 대응
+- [x] **실시간 체결창 (`src/features/trade-stream/`)**
+  - [x] 최근 1,000건 체결 링 버퍼 적재
+  - [x] `@tanstack/react-virtual` 가상 스크롤 뷰 구현 (DOM 25개 고정)
+  - [x] 대량 체결 발생 시 시각적 하이라이트 애니메이션
+- [x] **50단계 실시간 호가창 (`src/features/orderbook/`)**
+  - [x] 매수/매도 50단계 호가 테이블 렌더링
+  - [x] 누적 수량 기반 Depth Bar 너비 계산 및 CSS Variable 주입
+  - [x] 현재가 중심 자동 스크롤(Auto-Centering) 기능
 
 ---
 
